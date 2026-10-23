@@ -244,7 +244,7 @@ button:focus-visible{outline:2px solid var(--volt);outline-offset:2px}
 @keyframes blockbob{50%{transform:translateY(-4px)}}
 .startinfo{font-size:12px;font-weight:800;color:#f4eefdd9;text-shadow:0 2px 4px #000;text-align:center}
 .startinfo b{color:var(--gold)}
-.startmeta{display:flex;align-items:center;justify-content:space-between;width:100%;font-size:10px;letter-spacing:.1em;color:#f4eefd88}
+.startmeta{display:flex;align-items:center;justify-content:center;width:100%;font-size:10px;letter-spacing:.1em;color:#f4eefd88}
 .startmeta .iconbtn{background:#0b0920aa}
 .spetal{position:absolute;top:-20px;width:10px;height:7px;border-radius:60% 0 60% 0;background:#ffb3d4;opacity:.85;z-index:1;animation:fall linear infinite}
 @keyframes fall{to{transform:translate(-60px,calc(100vh + 40px)) rotate(540deg)}}
@@ -401,7 +401,7 @@ body{font-family:var(--body);-webkit-font-smoothing:none}
     <div class="startfoot">
       <div class="startbtn">START</div>
       <div class="startinfo" id="startInfo">Begin your journey</div>
-      <div class="startmeta"><span>v1.4 · 86 HEROES</span><button class="iconbtn" id="startSet" aria-label="Settings"><svg viewBox="0 0 20 20" fill="none" stroke="#f4eefd"><circle cx="10" cy="10" r="7.6" stroke-width="3" stroke-dasharray="3 2.97"/><circle cx="10" cy="10" r="5" stroke-width="3"/></svg></button></div>
+      <div class="startmeta"><span>v1.4 · 86 HEROES</span></div>
     </div>
   </div>
 
@@ -1916,9 +1916,8 @@ function setupStart(skip) {
     p.style.animationDelay = (-Math.random() * 10) + 's'; p.style.transform = `scale(${.6 + Math.random() * .8})`;
     st.appendChild(p);
   }
-  st.addEventListener('click', e => { if (e.target.closest('#startSet')) return; beginGame(); });
+  st.addEventListener('click', beginGame);
   st.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); beginGame(); } });
-  $('startSet').addEventListener('click', () => { syncSettings(); setText($('fpsNow'), ''); $('settings').hidden = false; });
 }
 function start(data) {
   const restored = data && data.S ? normalize(data.S) : load();
