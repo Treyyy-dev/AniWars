@@ -321,6 +321,31 @@ body{font-family:var(--body);-webkit-font-smoothing:none}
 .card h3{font-size:22px}
 .flag{border:2px solid var(--blk);text-shadow:var(--ext1);color:#fff!important}
 @media (prefers-reduced-motion:reduce){.ult.ready{animation:none}.sumfx.charge .orb{animation-duration:.01s}}
+
+/* ===== Missions ===== */
+.misbtn{position:absolute;right:max(14px,env(safe-area-inset-right,0px));top:calc(44% - 70px);width:66px;height:58px;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+  background:#1f5f6b;color:#fff;font-family:var(--display);font-size:9px;letter-spacing:.04em;text-shadow:var(--ext1)}
+.misbtn svg{width:26px;height:26px}
+.mdot{position:absolute;top:-8px;right:-8px;width:18px;height:18px;display:grid;place-items:center;font-style:normal;font-size:12px;background:var(--bad);color:#fff;border:2px solid var(--blk);text-shadow:var(--ext1);animation:blink2 .6s steps(2) infinite}
+.modal .card.mis{max-width:360px;max-height:86%;display:flex;flex-direction:column;gap:10px}
+.mhead{display:flex;align-items:center;justify-content:space-between}
+.mhead .iconbtn svg{width:14px;height:14px}
+.mreset{font-size:12px!important;margin:0}
+.mlist{display:flex;flex-direction:column;gap:8px;overflow-y:auto;min-height:0;padding:2px 4px 6px 0}
+.mrow{display:grid;grid-template-columns:1fr auto;gap:4px 10px;align-items:center;padding:9px;background:#1d1840;border:3px solid var(--blk);box-shadow:var(--bev),0 3px 0 var(--blk)}
+.mrow.done{background:#1c3a2c}
+.mrow.got{opacity:.55}
+.mt{font-size:13px;color:var(--text);text-shadow:var(--ext1)}
+.mrw{display:flex;align-items:center;gap:4px;font-size:13px;color:var(--gold);text-shadow:var(--ext1);justify-self:end}
+.mrw .coin{width:14px;height:14px}
+.mbar{position:relative;height:14px;background:#241c4a;border:2px solid var(--blk)}
+.mbar i{position:absolute;inset:0 auto 0 0;background:linear-gradient(#a8ffcf 0 30%,#2fd17a 30% 70%,#17803f 70%)}
+.mbar::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent 0 8px,rgba(13,11,28,.55) 8px 10px)}
+.mbar span{position:absolute;inset:0;display:grid;place-items:center;font-size:10px;z-index:1;text-shadow:var(--ext1)}
+.mclaim{min-width:76px;padding:6px 8px;font-family:var(--display);font-size:12px;color:#fff;background:#2fd17a;border:3px solid var(--blk);box-shadow:var(--bev),0 3px 0 var(--blk);text-shadow:var(--ext1);justify-self:end}
+.mclaim:disabled{background:#2b2648;color:var(--mute);cursor:default}
+.mclaim:active:not(:disabled){transform:translateY(2px);box-shadow:var(--bev),0 1px 0 var(--blk)}
+@media (prefers-reduced-motion:reduce){.mdot{animation:none}}
 </style>
 
 </head>
@@ -350,7 +375,8 @@ body{font-family:var(--body);-webkit-font-smoothing:none}
       <div class="timer" id="timer" hidden><i id="timerFill"></i></div>
     </div>
     <button class="bossbtn" id="bossBtn" hidden>Challenge<br>Boss</button>
-    <button class="ult" id="ult" disabled aria-label="Limit Break"><span id="ultLbl">LIMIT<br>BREAK</span></button>
+    <button class="misbtn" id="misBtn" aria-label="Missions"><svg viewBox="0 0 12 12" shape-rendering="crispEdges"><path d="M2 1h8v1h1v8h-1v1h-8v-1h-1v-8h1z" fill="#0d0b1c"/><path d="M2 2h8v8h-8z" fill="#f3e2b8"/><path d="M3 3h1v1h-1zM5 3h4v1h-4zM3 5h1v1h-1zM5 5h4v1h-4zM3 7h1v1h-1zM5 7h3v1h-3z" fill="#7a4a2a"/><path d="M3 3h1v1h-1zM3 5h1v1h-1z" fill="#2fd17a"/></svg><span>MISSIONS</span><i class="mdot" id="misDot" hidden>!</i></button>
+    <button class="ult" id="ult" disabled aria-label="ULTIMA"><span id="ultLbl">ULTIMA</span></button>
     <div class="hint" id="hint">TAP TO STRIKE</div>
     <div class="toast" id="toast" hidden></div>
   </section>
@@ -402,6 +428,15 @@ body{font-family:var(--body);-webkit-font-smoothing:none}
     <div class="big" id="payPrice">$4.99</div>
     <p>Real-money purchases aren't connected yet, so nothing was charged and nothing was added. Payments need a payment processor and a game server before this button can take real money.</p>
     <button class="wide" id="payClose">Got it</button>
+  </div>
+</div>
+<div class="modal" id="missions" hidden>
+  <div class="card sheet mis" role="dialog" aria-label="Missions">
+    <div class="mhead"><h3>Missions</h3><button class="iconbtn" id="misClose" aria-label="Close"><svg viewBox="0 0 10 10" shape-rendering="crispEdges"><path d="M1 1h2v1h1v1h2v-1h1v-1h2v2h-1v1h-1v2h1v1h1v2h-2v-1h-1v-1h-2v1h-1v1h-2v-2h1v-1h1v-2h-1v-1h-1z" fill="#f4eefd"/></svg></button></div>
+    <div class="seg" id="misTabs"><button data-p="d" aria-pressed="true">Daily</button><button data-p="w" aria-pressed="false">Weekly</button><button data-p="m" aria-pressed="false">Monthly</button></div>
+    <p class="mreset" id="misReset"></p>
+    <div class="mlist" id="misList"></div>
+    <button class="wide" id="misAll">Claim all</button>
   </div>
 </div>
 <div class="modal" id="settings" hidden>
@@ -1215,12 +1250,13 @@ function kill() {
   burst(0, cy, FOE_Z, Math.ceil(n * .65), `hsl(${foe.hue},80%,62%)`, 6, -11, .2, .9);
   burst(0, cy, FOE_Z, Math.ceil(n * .35), '#ffc53d', 5, -11, .14, 1.0);
   sfx(foe.boss ? 'ult' : 'kill');
-  if (foe.boss) { S.stage++; S.kills = 0; S.farm = false; shakeT = .35; toast('Boss defeated! +30 crystals'); giveCrystals(30); }
+  track('kill'); if (foe.boss) track('boss');
+  if (foe.boss) { S.stage++; track('stage'); S.kills = 0; S.farm = false; shakeT = .35; toast('Boss defeated! +30 crystals'); giveCrystals(30); }
   else {
     S.kills++;
     if (S.kills >= 10) {
       if (isBoss(S.stage + 1) && S.farm) S.kills = 10;
-      else { S.stage++; S.kills = 0; giveCrystals(5); }
+      else { S.stage++; track('stage'); S.kills = 0; giveCrystals(5); }
     }
   }
   S.best = Math.max(S.best, S.stage);
@@ -1233,7 +1269,7 @@ function bossFail() {
 function tapAt(x, y) {
   initAudio();
   if (!foe || foe.dead) return;
-  S.taps++;
+  S.taps++; track('tap');
   const crit = Math.random() < critChance();
   const dmg = tapDmg() * (crit ? 5 : 1) * (ultT > 0 ? 4 : 1);
   slashes.push({x, y, a: Math.random() * Math.PI - Math.PI / 2, life: .2, max: .2, len: 40 + Math.random() * 30, col: crit ? '#ff5fa2' : '#ffffff'});
@@ -1248,10 +1284,10 @@ function tapAt(x, y) {
 function fireUlt() {
   if (S.ult < 100 || ultT > 0) return;
   initAudio();
-  S.ult = 0; ultT = 8; flashT = .35; shakeT = .5;
+  S.ult = 0; ultT = 8; flashT = .35; shakeT = .5; track('ult');
   slashes.push({x: W / 2, y: H * .45, a: -.5, life: .5, max: .5, len: W * .75, col: '#ff5fa2', big: true});
   slashes.push({x: W / 2, y: H * .45, a: .5, life: .5, max: .5, len: W * .75, col: '#ffffff', big: true});
-  texts.push({x: W / 2, y: H * .3, vy: -20, life: 1.4, max: 1.4, txt: 'LIMIT BREAK', col: '#ffffff', size: 34, banner: true});
+  texts.push({x: W / 2, y: H * .3, vy: -20, life: 1.4, max: 1.4, txt: 'ULTIMA', col: '#ffffff', size: 40, banner: true});
   S.team.forEach(id => { hs(id).anim = .32; });
   const g = G();
   burst(0, 1.6, FOE_Z, Math.round(60 * Q().pm), '#ff5fa2', 7, -6, .16, .9);
@@ -1558,10 +1594,12 @@ function updateUI() {
   u.classList.toggle('ready', S.ult >= 100 && ultT <= 0);
   u.classList.toggle('active', ultT > 0);
   u.disabled = !(S.ult >= 100 && ultT <= 0);
-  const ul = ultT > 0 ? String(Math.ceil(ultT)) : 'LIMIT<br>BREAK';
+  const ul = ultT > 0 ? String(Math.ceil(ultT)) : 'ULTIMA';
   if ($('ultLbl').innerHTML !== ul) $('ultLbl').innerHTML = ul;
   $('hint').hidden = S.taps > 4;
   $('sumDot').hidden = S.crystals < COST1 || tab === 'summon';
+  $('misDot').hidden = !misReadyCount();
+  if (!$('missions').hidden) renderMissions();
   renderList();
 }
 
@@ -1580,7 +1618,7 @@ function pullOne(b, forceSR) {
   let pick = Math.random() * w.reduce((a, v) => a + v, 0), h = pool[0];
   for (let i = 0; i < pool.length; i++) { pick -= w[i]; if (pick <= 0) { h = pool[i]; break; } }
   const o = S.roster[h.id], res = {h};
-  if (!o) { S.roster[h.id] = {lv: 1, star: 1}; res.isNew = true; if (S.team.length < 6) { S.team.push(h.id); res.joined = true; } }
+  if (!o) { S.roster[h.id] = {lv: 1, star: 1}; res.isNew = true; track('newhero'); if (S.team.length < 6) { S.team.push(h.id); res.joined = true; } }
   else if (o.star < 5) { o.star++; res.up = o.star; }
   else { S.crystals += 10; res.refund = true; }
   return res;
@@ -1590,7 +1628,7 @@ function summon(n, bi = bIdx) {
   const cost = n === 1 ? COST1 : COST10;
   if (S.crystals < cost) { toast('Not enough crystals. Clear stages and bosses to earn more.'); return; }
   initAudio();
-  S.crystals -= cost;
+  S.crystals -= cost; track('summon', n);
   const b = BANNERS[bIdx], res = [];
   for (let i = 0; i < n; i++) res.push(pullOne(b, n === 10 && i === 9 && !res.some(r => r.h.rar !== 'R')));
   save(); sig = '';
@@ -1686,7 +1724,7 @@ list.addEventListener('click', e => {
     ban = e.target.closest('[data-ban]'), sb = e.target.closest('[data-sum]');
   if (lb && !lb.disabled) {
     const id = lb.dataset.lv, k = heroK(id), cost = heroCost(id, k);
-    if (S.gold >= cost) { S.gold -= cost; S.roster[id].lv += k; sfx('buy'); updateUI(); }
+    if (S.gold >= cost) { S.gold -= cost; S.roster[id].lv += k; track('lvl', k); sfx('buy'); updateUI(); }
   } else if (tb) {
     const id = tb.dataset.team, i = S.team.indexOf(id);
     if (i >= 0) { if (S.team.length === 1) { toast('Keep at least one hero in the team.'); return; } S.team.splice(i, 1); }
@@ -1705,7 +1743,7 @@ list.addEventListener('click', e => {
     if (!b.dataset.arm) { b.dataset.arm = '1'; b.textContent = 'Tap again to awaken'; setTimeout(() => { delete b.dataset.arm; }, 3000); return; }
     const gain = awakenGain(), roster = {};
     Object.keys(S.roster).forEach(id => roster[id] = {lv: 1, star: S.roster[id].star});
-    const keep = {spirit: S.spirit + gain, mute: S.mute, fps: S.fps, q: S.q, px: S.px, taps: S.taps, roster, team: S.team, crystals: S.crystals + 100 + gain * 5, pity: S.pity};
+    const keep = {spirit: S.spirit + gain, mute: S.mute, fps: S.fps, q: S.q, px: S.px, taps: S.taps, roster, team: S.team, crystals: S.crystals + 100 + gain * 5, pity: S.pity, mis: S.mis};
     S = Object.assign(fresh(), keep); ultT = 0; shots = []; flashT = .35; sig = '';
     spawnFoe(); save(); toast(`Awakened! +${fmt(gain)} Spirit Orbs`); updateUI();
   }
@@ -1717,6 +1755,96 @@ list.addEventListener('click', e => {
 });
 $('payClose').addEventListener('click', () => { $('payNote').hidden = true; });
 $('offBtn').addEventListener('click', () => { $('modal').hidden = true; });
+
+
+/* ---------- missions ---------- */
+const MISSIONS = {
+  d: {name: 'Daily', list: [
+    {k: 'tap', n: 200, t: 'Tap the enemy 200 times', r: 20},
+    {k: 'kill', n: 50, t: 'Defeat 50 enemies', r: 25},
+    {k: 'ult', n: 2, t: 'Unleash ULTIMA 2 times', r: 20},
+    {k: 'lvl', n: 10, t: 'Level up heroes 10 times', r: 20},
+    {k: 'summon', n: 1, t: 'Summon a hero', r: 15}]},
+  w: {name: 'Weekly', list: [
+    {k: 'kill', n: 500, t: 'Defeat 500 enemies', r: 200},
+    {k: 'boss', n: 10, t: 'Defeat 10 bosses', r: 250},
+    {k: 'tap', n: 2500, t: 'Tap the enemy 2,500 times', r: 180},
+    {k: 'stage', n: 15, t: 'Clear 15 stages', r: 220},
+    {k: 'summon', n: 20, t: 'Summon 20 heroes', r: 200}]},
+  m: {name: 'Monthly', list: [
+    {k: 'kill', n: 3000, t: 'Defeat 3,000 enemies', r: 1200},
+    {k: 'boss', n: 50, t: 'Defeat 50 bosses', r: 1500},
+    {k: 'ult', n: 40, t: 'Unleash ULTIMA 40 times', r: 1000},
+    {k: 'summon', n: 100, t: 'Summon 100 heroes', r: 1200},
+    {k: 'newhero', n: 10, t: 'Recruit 10 new heroes', r: 1500}]},
+};
+const pad2 = n => String(n).padStart(2, '0');
+function dayKey(d) { return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`; }
+function weekStart(d) { return new Date(d.getFullYear(), d.getMonth(), d.getDate() - ((d.getDay() + 6) % 7)); }
+function periodKey(p, d = new Date()) { return p === 'd' ? dayKey(d) : p === 'w' ? 'w' + dayKey(weekStart(d)) : `${d.getFullYear()}-${pad2(d.getMonth() + 1)}`; }
+function periodEnd(p, d = new Date()) {
+  if (p === 'd') return new Date(d.getFullYear(), d.getMonth(), d.getDate() + 1);
+  if (p === 'w') { const w = weekStart(d); return new Date(w.getFullYear(), w.getMonth(), w.getDate() + 7); }
+  return new Date(d.getFullYear(), d.getMonth() + 1, 1);
+}
+function misState(p) {
+  if (!S.mis || typeof S.mis !== 'object') S.mis = {};
+  const key = periodKey(p);
+  let st = S.mis[p];
+  if (!st || st.key !== key) st = S.mis[p] = {key, c: {}, got: []};
+  return st;
+}
+function track(k, n = 1) { for (const p of ['d', 'w', 'm']) { const st = misState(p); st.c[k] = (st.c[k] || 0) + n; } }
+const misReward = (p, i) => MISSIONS[p].list[i].r * foeGold(Math.max(1, S.stage), false);
+const misDone = (p, i) => (misState(p).c[MISSIONS[p].list[i].k] || 0) >= MISSIONS[p].list[i].n;
+const misClaimable = (p, i) => misDone(p, i) && !misState(p).got.includes(i);
+function misReadyCount() { let n = 0; for (const p of ['d', 'w', 'm']) MISSIONS[p].list.forEach((_, i) => { if (misClaimable(p, i)) n++; }); return n; }
+let misTab = 'd', misSig = '';
+function claimMission(p, i, quiet) {
+  if (!misClaimable(p, i)) return 0;
+  const g = misReward(p, i);
+  S.gold += g; misState(p).got.push(i);
+  if (!quiet) { toast(`+${fmt(g)} coins from missions`); sfx('buy'); }
+  return g;
+}
+function timeLeft(ms) {
+  const m = Math.max(0, Math.floor(ms / 60000)), d = Math.floor(m / 1440), h = Math.floor(m % 1440 / 60), mm = m % 60;
+  return d ? `${d}d ${h}h` : h ? `${h}h ${mm}m` : `${mm}m`;
+}
+function renderMissions() {
+  const p = misTab, st = misState(p), L = MISSIONS[p].list, box = $('misList');
+  if (misSig !== p + st.key) {
+    misSig = p + st.key;
+    box.innerHTML = L.map((m, i) => `<div class="mrow" data-i="${i}"><span class="mt">${m.t}</span><span class="mrw">${COIN}<b data-r></b></span>
+      <div class="mbar"><i data-f></i><span data-pr></span></div><button class="mclaim" data-claim="${i}"></button></div>`).join('');
+  }
+  box.querySelectorAll('.mrow').forEach(row => {
+    const i = +row.dataset.i, m = L[i], c = Math.min(m.n, st.c[m.k] || 0), got = st.got.includes(i), done = c >= m.n;
+    row.classList.toggle('done', done && !got); row.classList.toggle('got', got);
+    setText(row.querySelector('[data-r]'), fmt(misReward(p, i)));
+    row.querySelector('[data-f]').style.width = (c / m.n * 100) + '%';
+    setText(row.querySelector('[data-pr]'), `${fmt(c)} / ${fmt(m.n)}`);
+    const b = row.querySelector('.mclaim'); setText(b, got ? 'DONE' : done ? 'CLAIM' : 'GO'); b.disabled = got || !done;
+  });
+  setText($('misReset'), `${MISSIONS[p].name} missions reset in ${timeLeft(periodEnd(p) - Date.now())}`);
+  const any = L.some((_, i) => misClaimable(p, i)); $('misAll').disabled = !any;
+  document.querySelectorAll('#misTabs button').forEach(b => {
+    const pp = b.dataset.p, n = MISSIONS[pp].list.filter((_, i) => misClaimable(pp, i)).length;
+    setText(b, MISSIONS[pp].name + (n ? ` (${n})` : '')); b.setAttribute('aria-pressed', pp === p);
+  });
+}
+$('misBtn').addEventListener('click', () => { initAudio(); misSig = ''; renderMissions(); $('missions').hidden = false; });
+$('misClose').addEventListener('click', () => { $('missions').hidden = true; save(); });
+$('missions').addEventListener('click', e => {
+  if (e.target === $('missions')) { $('missions').hidden = true; save(); return; }
+  const tb = e.target.closest('#misTabs button'); if (tb) { misTab = tb.dataset.p; renderMissions(); return; }
+  const cb = e.target.closest('[data-claim]'); if (cb && !cb.disabled) { claimMission(misTab, +cb.dataset.claim); renderMissions(); updateUI(); save(); }
+});
+$('misAll').addEventListener('click', () => {
+  let g = 0; MISSIONS[misTab].list.forEach((_, i) => { g += claimMission(misTab, i, true); });
+  if (g) { toast(`+${fmt(g)} coins from missions`); sfx('buy'); }
+  renderMissions(); updateUI(); save();
+});
 
 /* ---------- audio ---------- */
 let AC = null;
