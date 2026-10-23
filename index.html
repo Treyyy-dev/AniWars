@@ -254,6 +254,73 @@ button:focus-visible{outline:2px solid var(--volt);outline-offset:2px}
 .modal{position:fixed;inset:0;background:#05040dcc;display:grid;place-items:center;z-index:10;padding:24px}
 .modal .card{max-width:320px;text-align:center;align-items:center}
 @media (prefers-reduced-motion:reduce){.hint,.ult.ready,.rotate svg,.orb::after{animation:none}.scard{animation-duration:.01s}}
+
+/* ===== Voxel UI: square blocks, bevels and extruded pixel text ===== */
+:root{--display:"DotGothic16","Dela Gothic One",monospace;--body:"DotGothic16","M PLUS Rounded 1c",monospace;--blk:#0d0b1c;
+  --bev:inset 3px 3px 0 rgba(255,255,255,.2),inset -3px -3px 0 rgba(0,0,0,.38);--ext1:1px 1px 0 #0d0b1c;--ext3:1px 1px 0 #0d0b1c,2px 2px 0 #0d0b1c,3px 3px 0 rgba(13,11,28,.65)}
+*,*::before,*::after{border-radius:0!important}
+body{font-family:var(--body);-webkit-font-smoothing:none}
+.coin,.gem,.ico svg{image-rendering:pixelated}
+.stagebox b,.goldbox .g,.foe-name,.card h3,.card .big,.bname,.sumtitle,.bossbtn,.ult span,.shead,.startinfo,.nm,.tab,.sumbtn,.wide,.buy .bc,.pbuy,.scard b,.toast,.subbar b{text-shadow:var(--ext3)}
+.lbl,.sub,.stat,.bdesc,.bfeat,.rates,.subbar,.goldbox small,.card p,.pitem span,.stile span,.set>span,.startmeta{text-shadow:var(--ext1)}
+.stagebox b{font-size:24px}.goldbox .g{font-size:24px}
+.row,.card,.bcard,.banner,.pf,.ico,.pitem,.stile,.toast,.modal .card,.mult,.seg{border:3px solid var(--blk)!important;box-shadow:var(--bev),0 4px 0 var(--blk)!important}
+.row{background:#1d1840}
+.row.inteam{box-shadow:inset 3px 3px 0 rgba(255,95,162,.45),inset -3px -3px 0 rgba(0,0,0,.38),0 4px 0 var(--sakura)!important}
+.pf.R{border-color:var(--r)!important}.pf.SR{border-color:var(--sr)!important}.pf.UR{border-color:var(--ur)!important}
+.pf{image-rendering:pixelated}
+.buy,.sumbtn,.wide,.pbuy,.bossbtn,.teamchip,.bchip,.iconbtn,.ult{border:3px solid var(--blk)!important;box-shadow:var(--bev),0 4px 0 var(--blk)!important;transition:transform .05s steps(1)}
+.buy:active:not(:disabled),.sumbtn:active:not(:disabled),.wide:active:not(:disabled),.pbuy:active,.bossbtn:active,.teamchip:active,.iconbtn:active{transform:translateY(3px);box-shadow:var(--bev),0 1px 0 var(--blk)!important}
+.buy{color:#fff}.buy .bl{text-shadow:var(--ext1)}
+.buy:disabled,.sumbtn:disabled,.wide:disabled{box-shadow:inset 3px 3px 0 rgba(255,255,255,.06),inset -3px -3px 0 rgba(0,0,0,.3),0 4px 0 var(--blk)!important;color:var(--mute)}
+.sumbtn,.sumbtn.ten,.wide,.pbuy,.bossbtn{color:#fff}
+.teamchip{padding:4px 0}.teamchip.on{color:#fff;text-shadow:var(--ext1)}
+.rar,.el,.tag{border:2px solid var(--blk)!important;box-shadow:inset 2px 2px 0 rgba(255,255,255,.3);color:#fff!important;text-shadow:var(--ext1);font-family:var(--display)}
+.el{background:color-mix(in srgb,var(--c) 30%,#17132f)}
+.tab{border:3px solid transparent}
+.tab[aria-selected="true"]{background:#2b2350;border-color:var(--blk);box-shadow:inset 3px 3px 0 rgba(255,255,255,.15),inset -3px -3px 0 rgba(0,0,0,.35),0 3px 0 var(--sakura)!important}
+.panel{border-top:4px solid var(--sakura);box-shadow:0 -4px 0 #a3245f}
+.hud{border-bottom:4px solid var(--blk);box-shadow:0 3px 0 #2c2654}
+.hpbar{height:22px;border:3px solid var(--blk)!important;background:#241c4a!important;box-shadow:inset 0 3px 0 rgba(0,0,0,.35),0 3px 0 var(--blk)}
+.hpbar i{background:linear-gradient(#ff9fb0 0 25%,#ff3d6e 25% 70%,#b0163c 70%)!important;transition:width .12s steps(3)}
+.hpbar::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent 0 10px,rgba(13,11,28,.65) 10px 12px);pointer-events:none}
+.hpbar span{z-index:1;font-size:12px;text-shadow:var(--ext3)}
+.timer{height:10px;border:2px solid var(--blk)}.timer i{background:linear-gradient(#ffe58a 0 40%,#ffb300 40%)}
+.wave b{transform:none!important;width:11px;height:11px;border:2px solid var(--blk)!important;background:#241c4a;box-shadow:inset 2px 2px 0 rgba(255,255,255,.15)}
+.wave b.on{background:var(--sakura);box-shadow:inset 2px 2px 0 rgba(255,255,255,.45),inset -2px -2px 0 rgba(0,0,0,.3)}
+.foe-name{font-size:15px}
+.ult{background:linear-gradient(to top,var(--sakura) calc(var(--p,0)*1%),#241c4a 0)!important;padding:0;width:66px;height:66px}
+.ult span,.ult.ready span,.ult.active span{background:transparent!important}
+.ult span{font-size:11px;color:#fff;text-shadow:var(--ext1)!important}
+.ult.ready{animation:blink2 .6s steps(2) infinite}
+@keyframes blink2{50%{filter:brightness(1.45)}}
+.ult.active span{font-size:24px}
+.mult button[aria-pressed="true"],.seg button[aria-pressed="true"]{color:#fff;text-shadow:var(--ext1);box-shadow:inset 2px 2px 0 rgba(255,255,255,.3),inset -2px -2px 0 rgba(0,0,0,.3)}
+.bchip[aria-pressed="true"]{color:#fff;text-shadow:var(--ext1)}
+.banner{image-rendering:pixelated}
+.bname{font-size:22px}
+.rates b{text-shadow:var(--ext1)}
+.scard{border:3px solid var(--c)!important;box-shadow:inset 3px 3px 0 rgba(255,255,255,.2),inset -3px -3px 0 rgba(0,0,0,.4),0 4px 0 var(--blk),0 0 16px -4px var(--c)!important}
+.scard canvas{image-rendering:pixelated}
+.scard .rr{border:2px solid var(--blk);color:#fff;text-shadow:var(--ext1)}
+.sumfx{perspective:700px}
+.orb{width:110px;height:110px;position:relative;transform-style:preserve-3d;display:none}
+.orb::before,.orb::after{content:none!important}
+.sumfx.charge .orb{display:block;animation:cube3d 1.1s cubic-bezier(.5,0,.7,1) forwards}
+.orb i{position:absolute;inset:0;background:var(--oc);border:5px solid var(--blk);box-shadow:inset 10px 10px 0 rgba(255,255,255,.4),inset -10px -10px 0 rgba(0,0,0,.3)}
+.orb i:nth-child(1){transform:translateZ(55px)}.orb i:nth-child(2){transform:rotateY(180deg) translateZ(55px)}
+.orb i:nth-child(3){transform:rotateY(90deg) translateZ(55px)}.orb i:nth-child(4){transform:rotateY(-90deg) translateZ(55px)}
+.orb i:nth-child(5){transform:rotateX(90deg) translateZ(55px)}.orb i:nth-child(6){transform:rotateX(-90deg) translateZ(55px)}
+@keyframes cube3d{0%{transform:scale(.3) rotateX(-22deg) rotateY(0)}70%{transform:scale(1) rotateX(-26deg) rotateY(540deg)}88%{transform:scale(1.15) rotateX(-26deg) rotateY(650deg)}100%{transform:scale(1.5) rotateX(-26deg) rotateY(720deg)}}
+.sumfx.charge .orb i{animation:facebright 1.1s steps(6) forwards}
+@keyframes facebright{0%,60%{filter:brightness(1);opacity:1}85%{filter:brightness(1.7);opacity:1}100%{filter:brightness(2.2);opacity:0}}
+.logo .l1,.logo .l1 em{font-family:"DotGothic16",var(--display);-webkit-text-stroke:2px #0d0b1c;paint-order:stroke fill}
+.logo .l1{text-shadow:0 2px 0 #c2185b,0 4px 0 #a3245f,0 6px 0 #6b1238,0 8px 0 #3a0a20,0 12px 14px #000c!important}
+.logo .l1 em{text-shadow:0 2px 0 #2bb3d9,0 4px 0 #1d7f99,0 6px 0 #145a6e,0 8px 0 #0a2f3a,0 12px 14px #000c!important}
+.logo .l2,.logo .tagline{text-shadow:var(--ext3)!important}
+.card h3{font-size:22px}
+.flag{border:2px solid var(--blk);text-shadow:var(--ext1);color:#fff!important}
+@media (prefers-reduced-motion:reduce){.ult.ready{animation:none}.sumfx.charge .orb{animation-duration:.01s}}
 </style>
 
 </head>
@@ -268,7 +335,7 @@ button:focus-visible{outline:2px solid var(--volt);outline-offset:2px}
   <header class="hud">
     <div class="stagebox"><span class="lbl" id="area">Sakura Outskirts</span><b id="stage">Stage 1</b></div>
     <div class="goldbox">
-      <div class="g"><svg class="coin" viewBox="0 0 20 20"><circle cx="10" cy="10" r="9" fill="#ffc53d"/><circle cx="10" cy="10" r="6" fill="none" stroke="#b07a00" stroke-width="1.6"/><path d="M10 6v8M7.5 8.5h5" stroke="#b07a00" stroke-width="1.6"/></svg><span id="gold">0</span></div>
+      <div class="g"><svg class="coin" viewBox="0 0 10 10" shape-rendering="crispEdges"><path d="M3 0h4v1h2v2h1v4h-1v2h-2v1h-4v-1h-2v-2h-1v-4h1v-2h2z" fill="#0d0b1c"/><path d="M3 1h4v1h1v1h1v4h-1v1h-1v1h-4v-1h-1v-1h-1v-4h1v-1h1z" fill="#ffc53d"/><path d="M4 3h2v4h-2z" fill="#b07a00"/><path d="M3 2h2v1h-2zM2 3h1v2h-1z" fill="#fff3b0"/></svg><span id="gold">0</span></div>
       <small><span id="dps">0</span> DPS · Tap <span id="tapv">1</span> <i id="ultTag" hidden>×4</i></small>
     </div>
     <button class="iconbtn" id="setBtn" aria-label="Settings"><svg viewBox="0 0 20 20" fill="none" stroke="#f4eefd"><circle cx="10" cy="10" r="7.6" stroke-width="3" stroke-dasharray="3 2.97"/><circle cx="10" cy="10" r="5" stroke-width="3"/></svg></button>
@@ -313,7 +380,7 @@ button:focus-visible{outline:2px solid var(--volt);outline-offset:2px}
   </div>
 
   <div class="sumfx" id="sumFx" hidden>
-    <div class="orb"></div>
+    <div class="orb"><i></i><i></i><i></i><i></i><i></i><i></i></div>
     <div class="sumtitle" id="sumTitle" hidden>Summon Results</div>
     <div class="cards" id="cards"></div>
     <div class="sumbtns" id="sumBtns" hidden><button class="wide alt" id="sumAgain">Again</button><button class="wide" id="sumClose">Continue</button></div>
@@ -355,8 +422,8 @@ button:focus-visible{outline:2px solid var(--volt);outline-offset:2px}
 (() => {
 const TAU = Math.PI * 2;
 const $ = id => document.getElementById(id);
-const COIN = '<svg class="coin" viewBox="0 0 20 20"><circle cx="10" cy="10" r="9" fill="#ffc53d"/><circle cx="10" cy="10" r="6" fill="none" stroke="#b07a00" stroke-width="1.6"/></svg>';
-const GEM = '<svg class="gem" viewBox="0 0 20 20"><path d="M10 1 18 8 10 19 2 8z" fill="#62e3ff"/><path d="M10 1 13 8 10 19 7 8z" fill="#b8f4ff"/><path d="M2 8h16" stroke="#1d7f99" stroke-width="1"/></svg>';
+const COIN = '<svg class="coin" viewBox="0 0 10 10" shape-rendering="crispEdges"><path d="M3 0h4v1h2v2h1v4h-1v2h-2v1h-4v-1h-2v-2h-1v-4h1v-2h2z" fill="#0d0b1c"/><path d="M3 1h4v1h1v1h1v4h-1v1h-1v1h-4v-1h-1v-1h-1v-4h1v-1h1z" fill="#ffc53d"/><path d="M4 3h2v4h-2z" fill="#b07a00"/><path d="M3 2h2v1h-2zM2 3h1v2h-1z" fill="#fff3b0"/></svg>';
+const GEM = '<svg class="gem" viewBox="0 0 10 10" shape-rendering="crispEdges"><path d="M2 0h6v1h1v1h1v3h-1v1h-1v1h-1v1h-1v1h-2v-1h-1v-1h-1v-1h-1v-1h-1v-3h1v-1h1z" fill="#0d0b1c"/><path d="M2 1h6v1h1v3h-1v1h-1v1h-1v1h-2v-1h-1v-1h-1v-1h-1v-3h1z" fill="#62e3ff"/><path d="M3 2h2v1h-1v1h-1z" fill="#d8fbff"/><path d="M6 5h1v1h-1v1h-1v-1h1z" fill="#1d7f99"/></svg>';
 
 function rng(seed) { let s = seed >>> 0 || 1; return () => (s = (s * 1664525 + 1013904223) >>> 0) / 4294967296; }
 function hashStr(str) { let h = 2166136261; for (let i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
@@ -1278,7 +1345,9 @@ function render() {
     ctx.globalAlpha = Math.min(1, k * 2.5);
     const sz = x.banner ? x.size * (1 + (1 - k) * .15) : x.size * (k > .8 ? 1 + (k - .8) * 2 : 1);
     ctx.font = `${Math.round(sz * (pixOn() ? 1.15 : 1))}px ${pixOn() ? '"DotGothic16",' : ''} "Dela Gothic One", Impact, sans-serif`;
-    ctx.lineWidth = x.banner ? 7 : 4; ctx.strokeStyle = x.banner ? '#c2185b' : 'rgba(10,6,20,.9)';
+    const dep = x.banner ? 6 : x.size > 20 ? 4 : 3;
+    for (let dd = dep; dd >= 1; dd--) { ctx.fillStyle = x.banner ? (dd > 3 ? '#3a0a20' : '#8f1d4f') : 'rgba(13,11,28,.92)'; ctx.fillText(x.txt, x.x + dd * .6, x.y + dd); }
+    ctx.lineWidth = x.banner ? 5 : 3; ctx.strokeStyle = x.banner ? '#c2185b' : 'rgba(10,6,20,.9)';
     ctx.strokeText(x.txt, x.x, x.y); ctx.fillStyle = x.col; ctx.fillText(x.txt, x.x, x.y);
   });
   ctx.globalAlpha = 1;
