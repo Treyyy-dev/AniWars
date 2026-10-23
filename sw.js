@@ -1,4 +1,4 @@
-const CACHE = 'aniwars-v14';
+const CACHE = 'aniwars-v15';
 const SHELL = ['./', './index.html', './manifest.webmanifest', './start.jpg', './start_px.png', './treyyyverse.png', './intro_0.jpg', './intro_1.jpg', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './apple-touch-icon.png'];
 const REMOTE = ['https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js'];
 self.addEventListener('install', e => {
