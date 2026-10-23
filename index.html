@@ -1059,7 +1059,7 @@ function buildEnv(A) {
   for (let i = 0; i < 60; i++) { sg.fillStyle = `rgba(255,255,255,${.3 + rr() * .6})`; sg.fillRect(rr() * 128 | 0, rr() * 150 | 0, 1, 1); }
   if (scene.background && scene.background.dispose) scene.background.dispose();
   scene.background = new THREE.CanvasTexture(sc);
-  scene.fog = new THREE.Fog(new THREE.Color(A.sky[2]).lerp(new THREE.Color(A.sky[1]), .5), 20, 46);
+  scene.fog = new THREE.Fog(new THREE.Color(A.sky[2]).lerp(new THREE.Color(A.sky[1]), .5), 28, 62);
   hemi.color.set(shade(A.sky[2], .55)); hemi.groundColor.set(A.mtn);
   const mc = document.createElement('canvas'); mc.width = mc.height = 128; const mg = mc.getContext('2d');
   const mr = mg.createRadialGradient(64, 64, 20, 64, 64, 64); mr.addColorStop(0, 'rgba(255,240,250,.55)'); mr.addColorStop(1, 'rgba(255,240,250,0)');
@@ -1098,10 +1098,10 @@ function buildEnv(A) {
       E(sz * s, sz * .8 * s, sz * s, '#' + c2.getHexString(), x + dx * s, dy * s, z + dz * s, 0, i * .3, 0);
     });
   };
-  tree(4.6, -5.5, 1.1); tree(-4.8, -4, .95); tree(5.6, 1.5, .8); tree(-5.8, 2.2, .85);
+  tree(7.2, -6.5, 1.1); tree(-7.4, -5, .95); tree(8, 2, .8); tree(-8.2, 2.6, .85);
   for (const sx of [-1, 1]) {
-    E(.6, .2, .6, '#8a8494', sx * 4.3, .1, -1.6); E(.22, .7, .22, '#8a8494', sx * 4.3, .55, -1.6);
-    E(.5, .42, .5, null, sx * 4.3, 1.1, -1.6, 0, 0, 0, glowM('#ffc977')); E(.72, .14, .72, '#5c5866', sx * 4.3, 1.38, -1.6);
+    E(.6, .2, .6, '#8a8494', sx * 6.4, .1, -1.6); E(.22, .7, .22, '#8a8494', sx * 6.4, .55, -1.6);
+    E(.5, .42, .5, null, sx * 6.4, 1.1, -1.6, 0, 0, 0, glowM('#ffc977')); E(.72, .14, .72, '#5c5866', sx * 6.4, 1.38, -1.6);
   }
   const mr2 = rng(31);
   for (let i = 0; i < 9; i++) E(9 + mr2() * 8, 9 + mr2() * 8, 4, A.mtn, -26 + i * 6.5, -2 + mr2() * 2, -30 - mr2() * 8, 0, 0, Math.PI / 4);
@@ -1201,7 +1201,7 @@ function resize() {
   }
 }
 const CAM = {x: 0, z: -1.4};
-function camPos(sx = 0, sy = 0) { camera.position.set(CAM.x + sx, 16.2 + sy, 7.2); camera.lookAt(CAM.x + sx * .3, 0, -2.3); }
+function camPos(sx = 0, sy = 0) { camera.position.set(CAM.x + sx, 21 + sy, 8.4); camera.lookAt(CAM.x + sx * .3, 0, -2.2); }
 const foePos = () => foe && foe.x !== undefined ? foe : {x: 0, z: FOE_Z};
 function toScreen(x, y, z) { if (!R3) return {x: W / 2, y: H * .45}; _v.set(x, y, z).project(camera); return {x: (_v.x + 1) / 2 * W, y: (1 - _v.y) / 2 * H}; }
 function G() {
@@ -1215,7 +1215,7 @@ const HM = {};
 let teamSig = '';
 function heroSlots(n) {
   const out = [];
-  if (n <= 3) for (let i = 0; i < n; i++) out.push([(i - (n - 1) / 2) * 2.0, .5 + Math.abs(i - (n - 1) / 2) * .25]);
+  if (n <= 3) for (let i = 0; i < n; i++) out.push([(i - (n - 1) / 2) * 3.4, 1.0 + Math.abs(i - (n - 1) / 2) * .6]);
   else {
     const f = Math.ceil(n / 2), b = n - f, sh = b === f ? .4 : 0;
     for (let i = 0; i < f; i++) out.push([(i - (f - 1) / 2) * 1.6 - sh, 2.8]);
@@ -1851,13 +1851,13 @@ function fireUlt() {
 
 /* ---------- lil monsters (minions) ---------- */
 let mins = [], minT = 1;
-const MIN_S = .62;
+const MIN_S = .72;
 function spawnMinion() {
   if (!foe) return;
-  const a = Math.random() * TAU, r = 1.7 + Math.random() * .9;
+  const a = Math.random() * TAU, r = 1.8 + Math.random() * 3.2;
   const fd = FOES[Math.floor(Math.random() * FOES.length)], hue = (foe.hue + 60 + Math.random() * 240) % 360;
-  const x = Math.max(-3.2, Math.min(3.2, foe.x + Math.cos(a) * r)), z = Math.max(-4.4, Math.min(-.6, foe.z + Math.sin(a) * r * .7 + .4));
-  const hp = foeHp(S.stage) * .3;
+  const x = Math.max(-5, Math.min(5, foe.x + Math.cos(a) * r)), z = Math.max(-5.4, Math.min(1, foe.z + Math.sin(a) * r * .7 + .4));
+  const hp = foeHp(S.stage) * .4;
   const mn = {x, z, hp, max: hp, kind: fd.k, hue, hitT: 0, spawnT: 0, dead: false, deadT: 0, atkT: Math.random(), ry: 0, moving: false, obj: null};
   if (R3) {
     try { mn.obj = foeModel({kind: fd.k, hue, boss: false}); mn.obj.group.scale.setScalar(.01); mn.obj.group.position.set(x, 0, z); scene.add(mn.obj.group); } catch (e) { mn.obj = null; }
@@ -1873,7 +1873,7 @@ function minionDamage(m, amt, crit, x, y, col) {
   texts.push({x: x + (Math.random() - .5) * 12, y, vy: -55, life: .7, max: .7, txt: (crit ? 'CRIT ' : '') + fmt(amt), col: crit ? '#ff5fa2' : col || '#ffffff', size: crit ? 20 : 14});
   if (m.hp <= 0) {
     m.hp = 0; m.dead = true; m.deadT = 0;
-    const gold = Math.max(1, Math.floor(foeGold(S.stage, false) * .25)); S.gold += gold;
+    const gold = Math.max(1, Math.floor(foeGold(S.stage, false) * .12)); S.gold += gold;
     const p = toScreen(m.x, 1.2 * MIN_S, m.z);
     texts.push({x: p.x, y: p.y - 14, vy: -40, life: .9, max: .9, txt: '+' + fmt(gold), col: '#ffc53d', size: 16});
     burst(m.x, .6, m.z, Math.round(18 * Q().pm), `hsl(${m.hue},80%,62%)`, 4.5, -11, .14, .7);
@@ -1884,8 +1884,8 @@ function updMinions(dt, team) {
   const live = foe && !foe.dead;
   if (live && foe.spawnT > .3) {
     minT -= dt;
-    const cap = foe.boss ? 4 : 3, n = mins.filter(m => !m.dead).length;
-    if (minT <= 0) { const k = Math.min(cap - n, 1 + (Math.random() < .5 ? 1 : 0)); for (let i = 0; i < k; i++) spawnMinion(); minT = 4 + Math.random() * 3; }
+    const cap = foe.boss ? 14 : 11, n = mins.filter(m => !m.dead).length;
+    if (minT <= 0) { const k = Math.min(cap - n, foe.spawnT < 1 ? 6 : 3 + Math.floor(Math.random() * 2)); for (let i = 0; i < k; i++) spawnMinion(); minT = 1.3 + Math.random() * 1.2; }
   }
   mins.forEach(m => {
     m.spawnT += dt; m.hitT = Math.max(0, m.hitT - dt);
@@ -1900,8 +1900,13 @@ function updMinions(dt, team) {
       if (bd > .95) { const sp = 1.5 * (m.hitT > 0 ? .3 : 1) * dt; m.x += dx / bd * sp; m.z += dz / bd * sp; m.moving = true; }
       else { m.atkT += dt; if (m.atkT > 1.1) m.atkT = 0; }
     }
-    m.x = Math.max(-3.6, Math.min(3.6, m.x)); m.z = Math.max(-4.6, Math.min(2.2, m.z));
+    m.x = Math.max(-5.4, Math.min(5.4, m.x)); m.z = Math.max(-5.8, Math.min(3, m.z));
   });
+  for (let i = 0; i < mins.length; i++) for (let j = i + 1; j < mins.length; j++) {
+    const a = mins[i], b = mins[j]; if (a.dead || b.dead) continue;
+    const dx = b.x - a.x, dz = b.z - a.z, d = Math.hypot(dx, dz);
+    if (d > .001 && d < .85) { const q = (.85 - d) / 2 / d; a.x -= dx * q; a.z -= dz * q; b.x += dx * q; b.z += dz * q; }
+  }
   mins = mins.filter(m => { if (m.dead && m.deadT > .35) { if (m.obj) { scene.remove(m.obj.group); m.obj.mats.forEach(q => q.dispose()); } return false; } return true; });
 }
 function animMinions() {
