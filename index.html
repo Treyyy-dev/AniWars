@@ -16,7 +16,7 @@
 <title>AniWars</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=M+PLUS+Rounded+1c:wght@500;800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=DotGothic16&family=M+PLUS+Rounded+1c:wght@500;800&display=swap">
 <style>
 /* Portrait-only phone column: HUD strip, night battlefield, tabbed scroll panel. Single dark theme by design. */
 :root{
@@ -61,6 +61,7 @@ button:focus-visible{outline:2px solid var(--volt);outline-offset:2px}
 /* Battle */
 .battle{position:relative;flex:1 1 auto;min-height:0;overflow:hidden;cursor:crosshair;touch-action:none}
 .battle canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+#cv,.px img.art{image-rendering:crisp-edges;image-rendering:pixelated}
 .foe{position:absolute;top:10px;left:50%;transform:translateX(-50%);width:min(300px,calc(100% - 32px));display:flex;flex-direction:column;gap:5px;pointer-events:none;z-index:2}
 .foe-name{display:flex;align-items:center;justify-content:center;gap:8px;font-weight:800;font-size:14px;text-shadow:0 2px 0 #0008}
 .tag{font-family:var(--display);font-size:10px;letter-spacing:.08em;padding:2px 7px;border-radius:4px;background:var(--bad);color:#1a0610}
@@ -302,7 +303,7 @@ button:focus-visible{outline:2px solid var(--volt);outline-offset:2px}
   </section>
 
   <div class="start" id="start" role="button" tabindex="0" aria-label="Tap to start">
-    <img class="art" src="start.jpg" alt="The AniWars heroes under a full moon">
+    <img class="art" id="startArt" src="start_px.png" alt="The AniWars heroes under a full moon">
     <div class="logo"><span class="l1">ANI<em>WARS</em></span><span class="l2">IDLE BATTLE</span><span class="tagline">Tap · Summon · Awaken</span></div>
     <div class="startfoot">
       <div class="startbtn">TAP TO START</div>
@@ -341,6 +342,7 @@ button:focus-visible{outline:2px solid var(--volt);outline-offset:2px}
     <h3>Settings</h3>
     <div class="set"><span>Sound</span><div class="seg" data-set="sound"><button data-v="on">On</button><button data-v="off">Off</button></div></div>
     <div class="set"><span>Frame rate <i id="fpsNow"></i></span><div class="seg" data-set="fps"><button data-v="30">30</button><button data-v="60">60</button><button data-v="90">90</button><button data-v="120">120</button></div></div>
+    <div class="set"><span>Pixel look</span><div class="seg" data-set="px"><button data-v="chunky">Chunky</button><button data-v="fine">Fine</button><button data-v="off">Off</button></div></div>
     <div class="set"><span>Quality</span><div class="seg" data-set="q"><button data-v="low">Low</button><button data-v="medium">Medium</button><button data-v="high">High</button><button data-v="max">Max</button></div></div>
     <p class="note">90 and 120 FPS need a screen with a high refresh rate. Low quality turns off glow effects and petals to save battery.</p>
     <button class="wide" id="setClose">Done</button>
@@ -518,7 +520,9 @@ const CG = 1.09;
 const MS = [10,25,50,75,100,125,150,200,250,300,400,500];
 
 const fresh = () => ({v:2,gold:0,stage:1,kills:0,farm:false,roster:{akari:{lv:1,star:1}},team:['akari'],crystals:500,pity:0,
-  tap:0,crit:0,fort:0,spirit:0,best:1,ult:0,mute:false,taps:0,seen:0,fps:60,q:'high',last:Date.now()});
+  tap:0,crit:0,fort:0,spirit:0,best:1,ult:0,mute:false,taps:0,seen:0,fps:60,q:'high',px:'chunky',last:Date.now()});
+const PXW = {chunky: 190, fine: 300};
+const pixOn = () => S.px !== 'off';
 const QUAL = {low:{dpr:1,motes:0,pm:.4,glow:false}, medium:{dpr:1.5,motes:10,pm:.7,glow:true}, high:{dpr:2,motes:18,pm:1,glow:true}, max:{dpr:3,motes:30,pm:1.4,glow:true}};
 const Q = () => QUAL[S.q] || QUAL.high;
 let S = fresh();
@@ -946,7 +950,7 @@ function fail3D(e) { try { console.error('3D disabled:', e); } catch (_) {} R3 =
 const FOE_Z = -3.4;
 function init3D() {
   if (!HAS3D || R3) return;
-  try { R3 = new THREE.WebGLRenderer({canvas: cv, antialias: true, powerPreference: 'high-performance'}); }
+  try { R3 = new THREE.WebGLRenderer({canvas: cv, antialias: false, powerPreference: 'high-performance'}); }
   catch (e) { R3 = null; return; }
   R3.shadowMap.type = THREE.PCFSoftShadowMap;
   scene = new THREE.Scene();
@@ -974,7 +978,7 @@ function resize() {
   dpr = Math.min(Q().dpr, window.devicePixelRatio || 1);
   ov.width = Math.round(W * dpr); ov.height = Math.round(H * dpr);
   if (R3) {
-    R3.setPixelRatio(dpr); R3.setSize(W, H, false);
+    R3.setPixelRatio(pixOn() ? Math.min(dpr, PXW[S.px] / W) : dpr); R3.setSize(W, H, false);
     camera.aspect = W / H;
     const far = camera.aspect < .9 ? (.9 / camera.aspect) : 1;
     camera.fov = 40 * Math.min(1.35, far); camera.updateProjectionMatrix();
@@ -1273,7 +1277,7 @@ function render() {
     const k = x.life / x.max;
     ctx.globalAlpha = Math.min(1, k * 2.5);
     const sz = x.banner ? x.size * (1 + (1 - k) * .15) : x.size * (k > .8 ? 1 + (k - .8) * 2 : 1);
-    ctx.font = `${Math.round(sz)}px "Dela Gothic One", Impact, sans-serif`;
+    ctx.font = `${Math.round(sz * (pixOn() ? 1.15 : 1))}px ${pixOn() ? '"DotGothic16",' : ''} "Dela Gothic One", Impact, sans-serif`;
     ctx.lineWidth = x.banner ? 7 : 4; ctx.strokeStyle = x.banner ? '#c2185b' : 'rgba(10,6,20,.9)';
     ctx.strokeText(x.txt, x.x, x.y); ctx.fillStyle = x.col; ctx.fillText(x.txt, x.x, x.y);
   });
@@ -1317,8 +1321,9 @@ function setText(el, v) { if (el.textContent !== v) el.textContent = v; }
 function portrait(cnv, h, size = 52) {
   const d = Math.min(2, window.devicePixelRatio || 1), px = Math.round(size * d);
   cnv.width = cnv.height = px;
-  const img = portraitImage(h, px, px, 'head');
-  if (img) cnv.getContext('2d').drawImage(img, 0, 0);
+  const lo = pixOn() ? Math.max(20, Math.round(size * (S.px === 'chunky' ? .5 : .75))) : px;
+  const img = portraitImage(h, lo, lo, 'head');
+  if (img) { const c = cnv.getContext('2d'); c.imageSmoothingEnabled = false; c.drawImage(img, 0, 0, px, px); }
 }
 function ownedSorted() {
   const team = S.team.slice();
@@ -1407,7 +1412,9 @@ function drawBannerArt(cnv, b) {
   const rg = c.createRadialGradient(w * .78, h * .55, 0, w * .78, h * .55, h * .7);
   rg.addColorStop(0, rgba(b.c2, .55)); rg.addColorStop(1, rgba(b.c2, 0));
   c.fillStyle = rg; c.fillRect(0, 0, w, h);
-  const fw = Math.round(150 * d), fh = Math.round(h * 1.25 * d);
+  const pk = pixOn() ? (S.px === 'chunky' ? .45 : .7) : d;
+  const fw = Math.round(150 * pk), fh = Math.round(h * 1.25 * pk);
+  c.imageSmoothingEnabled = !pixOn();
   if (b.feat[1]) { const im2 = portraitImage(HB[b.feat[1]], fw, fh, 'full'); if (im2) { c.globalAlpha = .6; c.drawImage(im2, w * .62 - 75, -h * .08, 150, h * 1.25); c.globalAlpha = 1; } }
   const im = portraitImage(HB[b.feat[0]], fw, fh, 'full'); if (im) c.drawImage(im, w * .8 - 75, -h * .12, 150, h * 1.25);
   const fade = c.createLinearGradient(0, 0, w * .65, 0); fade.addColorStop(0, rgba(b.c1, .95)); fade.addColorStop(1, rgba(b.c1, 0));
@@ -1571,7 +1578,7 @@ document.addEventListener('keydown', e => {
 $('ult').addEventListener('click', fireUlt);
 $('bossBtn').addEventListener('click', () => { S.farm = false; S.stage++; S.kills = 0; spawnFoe(); updateUI(); });
 function syncSettings() {
-  const vals = {sound: S.mute ? 'off' : 'on', fps: String(S.fps), q: S.q};
+  const vals = {sound: S.mute ? 'off' : 'on', fps: String(S.fps), q: S.q, px: S.px};
   document.querySelectorAll('#settings .seg').forEach(seg => seg.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', b.dataset.v === vals[seg.dataset.set])));
 }
 $('setBtn').addEventListener('click', () => { syncSettings(); setText($('fpsNow'), ''); $('settings').hidden = false; });
@@ -1583,13 +1590,14 @@ $('settings').addEventListener('click', e => {
   if (k === 'sound') { S.mute = v === 'off'; if (!S.mute) { initAudio(); sfx('buy'); } }
   else if (k === 'fps') S.fps = +v;
   else if (k === 'q') { S.q = v; applyQuality(); }
+  else if (k === 'px') { S.px = v; resize(); sig = ''; setStartArt(); updateUI(); }
   syncSettings();
 });
 $('wipeBtn').addEventListener('click', e => {
   const b = e.target;
   if (!b.dataset.arm) { b.dataset.arm = '1'; b.textContent = 'Tap again to erase everything'; setTimeout(() => { delete b.dataset.arm; b.textContent = 'Erase save'; }, 3000); return; }
   delete b.dataset.arm; b.textContent = 'Erase save';
-  const keep = {fps: S.fps, q: S.q, mute: S.mute};
+  const keep = {fps: S.fps, q: S.q, px: S.px, mute: S.mute};
   S = Object.assign(fresh(), keep); ultT = 0; shots = []; sig = ''; spawnFoe(); save(); updateUI();
   $('settings').hidden = true; toast('Save erased. A new journey begins.');
 });
@@ -1628,7 +1636,7 @@ list.addEventListener('click', e => {
     if (!b.dataset.arm) { b.dataset.arm = '1'; b.textContent = 'Tap again to awaken'; setTimeout(() => { delete b.dataset.arm; }, 3000); return; }
     const gain = awakenGain(), roster = {};
     Object.keys(S.roster).forEach(id => roster[id] = {lv: 1, star: S.roster[id].star});
-    const keep = {spirit: S.spirit + gain, mute: S.mute, fps: S.fps, q: S.q, taps: S.taps, roster, team: S.team, crystals: S.crystals + 100 + gain * 5, pity: S.pity};
+    const keep = {spirit: S.spirit + gain, mute: S.mute, fps: S.fps, q: S.q, px: S.px, taps: S.taps, roster, team: S.team, crystals: S.crystals + 100 + gain * 5, pity: S.pity};
     S = Object.assign(fresh(), keep); ultT = 0; shots = []; flashT = .35; sig = '';
     spawnFoe(); save(); toast(`Awakened! +${fmt(gain)} Spirit Orbs`); updateUI();
   }
@@ -1672,6 +1680,7 @@ function normalize(s) {
   if (!n.team.length) n.team = [Object.keys(n.roster)[0] || 'akari'];
   if (!n.roster[n.team[0]]) n.roster[n.team[0]] = {lv: 1, star: 1};
   if (!QUAL[n.q]) n.q = 'high';
+  if (!['chunky', 'fine', 'off'].includes(n.px)) n.px = 'chunky';
   if (![30, 60, 90, 120].includes(n.fps)) n.fps = 60;
   n.v = 2;
   return n;
@@ -1690,7 +1699,14 @@ function beginGame() {
   const st = $('start'); st.classList.add('out');
   setTimeout(() => { st.hidden = true; if (pendingOffline) $('modal').hidden = false; }, 500);
 }
+function setStartArt() {
+  const a = $('startArt'); if (!a) return;
+  const src = pixOn() ? 'start_px.png' : 'start.jpg';
+  if (!a.src.endsWith(src)) a.src = src;
+  $('start').classList.toggle('px', pixOn());
+}
 function setupStart(skip) {
+  setStartArt();
   const st = $('start');
   if (skip) { st.hidden = true; started = true; return; }
   const n = Object.keys(S.roster).length;

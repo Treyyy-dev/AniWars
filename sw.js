@@ -1,5 +1,5 @@
-const CACHE = 'aniwars-v1';
-const SHELL = ['./', './index.html', './manifest.webmanifest', './start.jpg', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './apple-touch-icon.png'];
+const CACHE = 'aniwars-v2';
+const SHELL = ['./', './index.html', './manifest.webmanifest', './start.jpg', './start_px.png', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './apple-touch-icon.png'];
 const REMOTE = ['https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js'];
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL).then(() => Promise.all(REMOTE.map(u => c.add(u).catch(() => {}))))));
