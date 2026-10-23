@@ -21,7 +21,7 @@ const mode = process.argv[2] || 'battle';
     for (const set of [[0,3],[3,6],[6,9]]) { await ev(`S.team = __pick.slice(${set[0]},${set[1]}); teamSig='';`); await p.waitForTimeout(1200); await p.screenshot({path:`out_b${set[0]}.png`, clip:{x:0,y:0,width:390,height:420}}); }
   } else if (mode === 'run') {
     await ev(`S.team = [__pick[0], __pick[3], __pick[7]]; teamSig=''; S.stage=12; spawnFoe();`);
-    for (let i = 0; i < 4; i++) { await p.waitForTimeout(1600); await p.screenshot({path:`out_r${i}.png`, clip:{x:0,y:0,width:390,height:420}}); }
+    for (let i = 0; i < 4; i++) { await p.waitForTimeout(i ? 650 : 1500); await p.screenshot({path:`out_r${i}.png`, clip:{x:0,y:0,width:390,height:420}}); }
     console.log(await ev(`JSON.stringify({foe:[+foe.x.toFixed(2), +foe.z.toFixed(2), foe.hp|0, S.kills], heroes: S.team.map(id => [+hs(id).p.x.toFixed(2), +hs(id).p.z.toFixed(2), hs(id).run])})`));
   } else if (mode === 'weapons') {
     await ev(`(() => { const c = document.createElement('canvas'); c.width = 6*130; c.height = 2*170; const g = c.getContext('2d'); g.fillStyle='#2b2450'; g.fillRect(0,0,c.width,c.height);
