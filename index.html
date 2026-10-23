@@ -377,6 +377,29 @@ body{font-family:var(--body);-webkit-font-smoothing:none}
 @keyframes ilogo{from{opacity:0;transform:scale(.85)}to{opacity:1;transform:none}}
 #introRun{position:absolute;left:50%;transform:translateX(-50%);bottom:max(5%,env(safe-area-inset-bottom,0px));width:min(100%,960px);height:auto;max-width:100%;aspect-ratio:384/126;image-rendering:crisp-edges;image-rendering:pixelated}
 @media (prefers-reduced-motion:reduce){.ilogo{animation:none}}
+
+/* ===== Home ===== */
+.homebtn{position:absolute;left:max(14px,env(safe-area-inset-left,0px));top:44%;width:66px;height:66px;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+  background:#b0632a;color:#fff;font-family:var(--display);font-size:10px;letter-spacing:.04em;text-shadow:var(--ext1);border:3px solid var(--blk);box-shadow:var(--bev),0 4px 0 var(--blk)}
+.homebtn svg{width:30px;height:30px}
+.homebtn:active{transform:translateY(3px);box-shadow:var(--bev),0 1px 0 var(--blk)}
+.app.home .homebtn{background:#c4333f;top:auto;bottom:max(14px,env(safe-area-inset-bottom,0px))}
+.bossbtn{top:calc(44% + 84px)!important}
+.app.home .foe,.app.home #ult,.app.home #misBtn,.app.home #bossBtn,.app.home #hint{display:none!important}
+.app.home .battle{cursor:pointer}
+.hbar{position:absolute;top:10px;left:max(12px,env(safe-area-inset-left,0px));right:max(12px,env(safe-area-inset-right,0px));z-index:3;display:flex;flex-wrap:wrap;align-items:center;gap:6px;padding:8px;
+  background:#17132fee;border:3px solid var(--blk);box-shadow:var(--bev),0 4px 0 var(--blk);font-size:13px;text-shadow:var(--ext1)}
+.hbar span{flex:1 1 100%;min-width:0}
+.hb{padding:6px 10px;font-family:var(--display);font-size:12px;color:#fff;background:#3b3166;border:3px solid var(--blk);box-shadow:var(--bev),0 3px 0 var(--blk);text-shadow:var(--ext1)}
+.hb:active{transform:translateY(2px);box-shadow:var(--bev),0 1px 0 var(--blk)}
+.hungry{color:var(--bad);font-style:normal}
+.lock{font-family:var(--display);font-size:10px;padding:1px 5px;background:#2b2648;border:2px solid var(--blk);color:var(--mute);flex:none}
+.row.locked{opacity:.6}
+.fic{overflow:hidden;padding:0}.fic canvas{width:100%;height:100%;image-rendering:pixelated}
+.ficon{width:36px;height:36px;image-rendering:pixelated}
+.swatch{background:var(--sw)!important}
+.rbtns{display:flex;flex-direction:column;gap:6px;width:80px;flex:none}
+.row .mbar{margin-top:4px}
 </style>
 
 </head>
@@ -406,13 +429,15 @@ body{font-family:var(--body);-webkit-font-smoothing:none}
       <div class="timer" id="timer" hidden><i id="timerFill"></i></div>
     </div>
     <button class="bossbtn" id="bossBtn" hidden>Challenge<br>Boss</button>
+    <button class="homebtn" id="homeBtn" aria-label="Home"><svg viewBox="0 0 12 12" shape-rendering="crispEdges"><path d="M5 0h2v1h1v1h1v1h1v1h1v1h1v2h-1v5h-10v-5h-1v-2h1v-1h1v-1h1v-1h1v-1h1z" fill="#0d0b1c"/><path d="M5 1h2v1h1v1h1v1h1v1h1v1h-10v-1h1v-1h1v-1h1v-1h1z" fill="#ff5fa2"/><path d="M2 7h8v4h-8z" fill="#f3e2b8"/><path d="M5 8h2v3h-2z" fill="#7a4a2a"/><path d="M3 8h1v1h-1zM8 8h1v1h-1z" fill="#62e3ff"/></svg><span>HOME</span><i class="mdot" id="homeDot" hidden>!</i></button>
+    <div class="hbar" id="homeBar" hidden></div>
     <button class="misbtn" id="misBtn" aria-label="Missions"><svg viewBox="0 0 12 12" shape-rendering="crispEdges"><path d="M2 1h8v1h1v8h-1v1h-8v-1h-1v-8h1z" fill="#0d0b1c"/><path d="M2 2h8v8h-8z" fill="#f3e2b8"/><path d="M3 3h1v1h-1zM5 3h4v1h-4zM3 5h1v1h-1zM5 5h4v1h-4zM3 7h1v1h-1zM5 7h3v1h-3z" fill="#7a4a2a"/><path d="M3 3h1v1h-1zM3 5h1v1h-1z" fill="#2fd17a"/></svg><span>MISSIONS</span><i class="mdot" id="misDot" hidden>!</i></button>
     <button class="ult" id="ult" disabled aria-label="ULTIMA"><span id="ultLbl">ULTIMA</span></button>
     <div class="hint" id="hint">TAP TO STRIKE</div>
     <div class="toast" id="toast" hidden></div>
   </section>
 
-  <section class="panel">
+  <section class="panel" id="mainPanel">
     <nav class="tabs" role="tablist">
       <button class="tab" role="tab" data-tab="heroes" aria-selected="true">Squad</button>
       <button class="tab" role="tab" data-tab="train" aria-selected="false">Training</button>
@@ -440,6 +465,12 @@ body{font-family:var(--body);-webkit-font-smoothing:none}
       <div class="startmeta"><span>v1.4 · 86 HEROES</span></div>
     </div>
   </div>
+
+  <section class="panel" id="homePanel" hidden>
+    <nav class="tabs" id="hTabs" role="tablist"><button class="tab" role="tab" data-ht="furn" aria-selected="true">Furniture</button><button class="tab" role="tab" data-ht="elec" aria-selected="false">Tech</button><button class="tab" role="tab" data-ht="food" aria-selected="false">Food</button><button class="tab" role="tab" data-ht="res" aria-selected="false">Heroes</button><button class="tab" role="tab" data-ht="style" aria-selected="false">Style</button></nav>
+    <div class="subbar"><span id="hSubL"></span></div>
+    <div class="list" id="hList"></div>
+  </section>
 
   <div class="sumfx" id="sumFx" hidden>
     <div class="orb"><i></i><i></i><i></i><i></i><i></i><i></i></div>
@@ -658,7 +689,7 @@ const CG = 1.09;
 const MS = [10,25,50,75,100,125,150,200,250,300,400,500];
 
 const fresh = () => ({v:2,gold:0,stage:1,kills:0,farm:false,roster:{akari:{lv:1,star:1}},team:['akari'],crystals:500,pity:0,
-  tap:0,crit:0,fort:0,spirit:0,best:1,ult:0,mute:false,taps:0,seen:0,fps:60,q:'high',px:'chunky',last:Date.now()});
+  tap:0,crit:0,fort:0,spirit:0,best:1,ult:0,mute:false,taps:0,seen:0,fps:60,q:'high',px:'chunky',peak:1,last:Date.now()});
 const PXW = {chunky: 190, fine: 300};
 const pixOn = () => S.px !== 'off';
 const QUAL = {low:{dpr:1,motes:0,pm:.4,glow:false}, medium:{dpr:1.5,motes:10,pm:.7,glow:true}, high:{dpr:2,motes:18,pm:1,glow:true}, max:{dpr:3,motes:30,pm:1.4,glow:true}};
@@ -1145,7 +1176,7 @@ function resize() {
     camera.aspect = W / H;
     const far = camera.aspect < .9 ? (.9 / camera.aspect) : 1;
     camera.fov = 40 * Math.min(1.35, far); camera.updateProjectionMatrix();
-    camPos();
+    camPos(); homeResize();
   }
 }
 function camPos(sx = 0, sy = 0) { camera.position.set(sx, 5.2 + sy, 10.6); camera.lookAt(sx * .3, 1.45, -1.3); }
@@ -1270,6 +1301,389 @@ function portraitImage(h, w, hh, mode) {
   return PCACHE[key] = out;
 }
 
+/* ---------- HOME: data ---------- */
+const HOME_ITEMS = [
+  {id:'chair', cat:'furn', name:'Wood Chair', stage:1, w:1, d:1, use:'sit', seat:.45, emo:['dots','note'], desc:'Take a seat'},
+  {id:'plant', cat:'furn', name:'Potted Plant', stage:1, w:1, d:1, use:'stand', emo:['heart','sparkle'], desc:'Water and admire'},
+  {id:'table', cat:'furn', name:'Dining Table', stage:3, w:2, d:1, use:'stand', emo:['food','laugh'], desc:'Snack time spot'},
+  {id:'armchair', cat:'furn', name:'Armchair', stage:5, w:1, d:1, use:'sit', seat:.42, emo:['heart','dots'], desc:'Cozy single seat'},
+  {id:'rug', cat:'furn', name:'Sakura Rug', stage:5, w:2, d:2, flat:true, use:null, desc:'Furniture can sit on top'},
+  {id:'lamp', cat:'furn', name:'Paper Lantern', stage:8, w:1, d:1, use:null, desc:'Warm glow'},
+  {id:'sofa', cat:'furn', name:'Comfy Sofa', stage:10, w:2, d:1, use:'sit', seat:.42, emo:['heart','note','zzz'], desc:'Fits two friends'},
+  {id:'bed', cat:'furn', name:'Cozy Bed', stage:12, w:1, d:2, use:'lie', emo:['zzz'], desc:'Naps restore spirit'},
+  {id:'shelf', cat:'furn', name:'Bookshelf', stage:15, w:1, d:1, use:'stand', emo:['idea','dots'], desc:'Manga collection'},
+  {id:'fridge', cat:'elec', name:'Fridge', stage:18, w:1, d:1, use:'stand', emo:['food','wow'], desc:'Midnight snacks'},
+  {id:'speaker', cat:'elec', name:'Boombox', stage:20, w:1, d:1, use:'dance', emo:['note','note','sparkle'], desc:'Starts a dance party'},
+  {id:'tv', cat:'elec', name:'Flat TV', stage:25, w:2, d:1, use:'watch', emo:['note','laugh','wow'], desc:'Anime marathon'},
+  {id:'kotatsu', cat:'furn', name:'Kotatsu', stage:30, w:2, d:2, use:'sit', seat:.3, emo:['heart','zzz','food'], desc:'Heated table hangout'},
+  {id:'console', cat:'elec', name:'Game Console', stage:35, w:1, d:1, use:'sit', seat:.02, emo:['wow','laugh','angry'], desc:'Co-op battles'},
+  {id:'arcade', cat:'elec', name:'Arcade Cabinet', stage:40, w:1, d:1, use:'stand', emo:['wow','sparkle','angry'], desc:'Chase the high score'},
+  {id:'pc', cat:'elec', name:'Gaming PC', stage:50, w:2, d:1, use:'stand', emo:['wow','idea','laugh'], desc:'Streams their runs'},
+];
+const FOODS = [
+  {id:'onigiri', name:'Onigiri', price:50, fill:20},
+  {id:'ramen', name:'Ramen Bowl', price:180, fill:40},
+  {id:'bento', name:'Bento Box', price:450, fill:60},
+  {id:'sushi', name:'Sushi Platter', price:1200, fill:85},
+  {id:'cake', name:'Mochi Cake', price:3000, fill:100},
+];
+const WALLS = [{id:'sakura', name:'Sakura Pink', col:'#f0c2d4', stage:1}, {id:'mint', name:'Mint Breeze', col:'#bfead6', stage:6}, {id:'cream', name:'Cream Paper', col:'#f1e4c8', stage:14},
+  {id:'night', name:'Night Sky', col:'#4a5596', stage:22}, {id:'lav', name:'Lavender', col:'#cdb8ef', stage:32}, {id:'cedar', name:'Cedar Wood', col:'#a8754e', stage:45}];
+const FLOORS = [{id:'oak', name:'Oak Planks', col:'#b98a5a', stage:1}, {id:'cherry', name:'Cherry Planks', col:'#8a4b3a', stage:8}, {id:'tatami', name:'Tatami', col:'#c9c27a', stage:16},
+  {id:'stone', name:'Stone Tiles', col:'#8e8a99', stage:28}, {id:'walnut', name:'Dark Walnut', col:'#4a3326', stage:38}];
+const HI = Object.fromEntries(HOME_ITEMS.map(i => [i.id, i]));
+const HOUSE = {FH: 3.2};
+const HOME_MAX = 8;
+const peak = () => Math.max(S.peak || 1, S.best || 1, S.stage || 1);
+const unlocked = it => peak() >= it.stage;
+function homeData() {
+  const h = S.home || (S.home = {});
+  if (!Array.isArray(h.sel)) h.sel = S.team.slice(0, HOME_MAX);
+  h.sel = h.sel.filter(id => S.roster[id]).slice(0, HOME_MAX);
+  if (!Array.isArray(h.placed)) h.placed = [];
+  if (!h.pantry || typeof h.pantry !== 'object') h.pantry = {};
+  if (!h.food || typeof h.food !== 'object') h.food = {};
+  if (!h.wall) h.wall = 'sakura'; if (!h.floor) h.floor = 'oak';
+  if (!h.uid) h.uid = 1;
+  return h;
+}
+const HUNGER_MS = 8 * 3600 * 1000;
+function hunger(id) {
+  const f = homeData().food[id];
+  if (!f) return 100;
+  return Math.max(0, Math.min(100, f.v - (Date.now() - f.t) / HUNGER_MS * 100));
+}
+function feed(id, fid) {
+  const h = homeData(), F = FOODS.find(x => x.id === fid);
+  if (!F || !(h.pantry[fid] > 0)) return false;
+  h.pantry[fid]--; h.food[id] = {v: Math.min(100, hunger(id) + F.fill), t: Date.now()};
+  const r = RES[id]; if (r) { showEmo(r, 'food', 1.2); setTimeout(() => RES[id] && showEmo(RES[id], 'heart', 1.6), 1200); }
+  return true;
+}
+
+/* ---------- HOME: grid ---------- */
+const tileBlocked = (tx, tz) => tx < 0 || tx > 7 || tz < 0 || tz > 4 || (tx >= 6 && tz >= 1);
+const footprint = (it, rot) => rot % 2 ? [it.d, it.w] : [it.w, it.d];
+function cellsOf(p) { const [fw, fd] = footprint(HI[p.id], p.rot), out = []; for (let i = 0; i < fw; i++) for (let j = 0; j < fd; j++) out.push([p.tx + i, p.tz + j]); return out; }
+function canPlace(id, f, tx, tz, rot, ignore) {
+  const it = HI[id], [fw, fd] = footprint(it, rot);
+  for (let i = 0; i < fw; i++) for (let j = 0; j < fd; j++) {
+    if (tileBlocked(tx + i, tz + j)) return false;
+    if (!it.flat) for (const p of homeData().placed) if (p.uid !== ignore && p.f === f && !HI[p.id].flat && cellsOf(p).some(([a, b]) => a === tx + i && b === tz + j)) return false;
+  }
+  return true;
+}
+function placedCenter(p) { const [fw, fd] = footprint(HI[p.id], p.rot); return {x: p.tx - 3.5 + (fw - 1) / 2, z: p.tz - 2 + (fd - 1) / 2, y: p.f ? HOUSE.FH : 0}; }
+const frontDir = rot => [[0, 1], [1, 0], [0, -1], [-1, 0]][rot % 4];
+function freeTiles(f) {
+  const occ = new Set(); homeData().placed.forEach(p => { if (p.f === f && !HI[p.id].flat) cellsOf(p).forEach(([a, b]) => occ.add(a + ',' + b)); });
+  const out = []; for (let tx = 0; tx < 8; tx++) for (let tz = 0; tz < 5; tz++) if (!tileBlocked(tx, tz) && !occ.has(tx + ',' + tz)) out.push([tx, tz]); return out;
+}
+
+/* ---------- HOME: furniture models (front faces +z, origin at footprint centre on the floor) ---------- */
+function furnModel(id) {
+  const g = new THREE.Group(), A = [];
+  const B = (w, h, d, c, x, y, z, rx = 0, ry = 0, rz = 0, m) => box(g, w, h, d, c, x, y, z, rx, ry, rz, m);
+  const glow = (c, x, y, z, s) => { const sp = glowSprite(c, s); sp.position.set(x, y, z); g.add(sp); return sp; };
+  switch (id) {
+    case 'chair': B(.62, .08, .62, '#a0703f', 0, .45, 0); for (const [x, z] of [[-.25, -.25], [.25, -.25], [-.25, .25], [.25, .25]]) B(.08, .45, .08, '#6b4426', x, .22, z); B(.62, .6, .08, '#a0703f', 0, .8, -.27); break;
+    case 'plant': B(.42, .38, .42, '#c46a3a', 0, .19, 0); B(.46, .06, .46, '#8a4520', 0, .4, 0); [[0, .7, 0, .4], [-.15, .9, .1, .28], [.16, .95, -.08, .3], [0, 1.15, 0, .24]].forEach(([x, y, z, s]) => B(s, s, s, '#3fbf5f', x, y, z, 0, .4, 0)); break;
+    case 'table': B(1.8, .1, .9, '#b07a46', 0, .75, 0); for (const [x, z] of [[-.8, -.35], [.8, -.35], [-.8, .35], [.8, .35]]) B(.1, .72, .1, '#6b4426', x, .36, z); B(.3, .12, .3, '#ffffff', -.4, .86, 0); B(.22, .1, .22, '#ff8cc0', .35, .85, .1); break;
+    case 'armchair': B(.9, .4, .85, '#6a4fb3', 0, .3, 0); B(.9, .6, .2, '#5a3f9f', 0, .75, -.33); for (const x of [-.4, .4]) B(.16, .55, .85, '#5a3f9f', x, .45, 0); B(.6, .12, .6, '#8f78d6', 0, .52, .05); break;
+    case 'rug': [[1.9, 1.3], [1.5, 1.7], [1.1, 1.9]].forEach(([w, d]) => B(w, .03, d, '#ff8cc0', 0, .02, 0)); B(1.2, .035, .8, '#ffd1e6', 0, .025, 0); g.traverse(o => { if (o.isMesh) o.castShadow = false; }); break;
+    case 'lamp': B(.4, .1, .4, '#3a2a30', 0, .05, 0); B(.07, 1.1, .07, '#3a2a30', 0, .6, 0); B(.46, .55, .46, null, 0, 1.3, 0, 0, 0, 0, glowM('#ffd9a0')); B(.5, .06, .5, '#c4333f', 0, 1.6, 0); B(.5, .06, .5, '#c4333f', 0, 1.02, 0); glow('#ffc977', 0, 1.3, 0, 1.6); break;
+    case 'sofa': B(1.9, .38, .85, '#e0507a', 0, .25, 0); B(1.9, .65, .22, '#c23e66', 0, .7, -.32); for (const x of [-.86, .86]) B(.2, .55, .85, '#c23e66', x, .42, 0); for (const x of [-.45, .45]) B(.8, .12, .62, '#ff8cad', x, .48, .06); break;
+    case 'bed': B(.96, .32, 1.92, '#7a4a2a', 0, .16, 0); B(.9, .16, 1.8, '#f3eef8', 0, .4, 0); B(.92, .1, 1.15, '#5fa8ff', 0, .52, .3); B(.6, .12, .32, '#ffffff', 0, .54, -.66); B(.96, .85, .1, '#7a4a2a', 0, .42, -.92); break;
+    case 'shelf': B(.92, 1.8, .42, '#8a5a34', 0, .9, -.24); for (const y of [.35, .85, 1.35]) { B(.84, .05, .36, '#6b4426', 0, y - .12, -.22); [['#ff5fa2', -.3], ['#62e3ff', -.18], ['#ffc53d', -.06], ['#7dffc4', .08], ['#c47bff', .22]].forEach(([c, x], i) => B(.1, .3 - (i % 2) * .06, .3, c, x, y + .03, -.2)); } break;
+    case 'fridge': B(.82, 1.65, .72, '#e8f4ff', 0, .83, 0); B(.84, .03, .74, '#9fb4c8', 0, 1.1, 0); for (const y of [.65, 1.35]) B(.06, .3, .06, '#9fb4c8', .3, y, .37); B(.2, .14, .02, '#ff5fa2', -.15, 1.4, .37); break;
+    case 'speaker': B(.86, .5, .36, '#2a2236', 0, .25, 0); for (const x of [-.24, .24]) { B(.3, .3, .03, '#111018', x, .25, .19); A.push(['pulse', B(.14, .14, .04, null, x, .25, .2, 0, 0, 0, glowM('#ff5fa2'))]); } B(.5, .06, .06, '#9fb4c8', 0, .55, 0); glow('#ff5fa2', 0, .3, .25, .9); break;
+    case 'tv': B(1.6, .42, .5, '#4a3326', 0, .21, -.1); B(1.75, 1.0, .08, '#111018', 0, 1.0, -.15); { const sc = B(1.6, .86, .02, null, 0, 1.0, -.1, 0, 0, 0, new THREE.MeshBasicMaterial({color: '#62e3ff'})); A.push(['screen', sc]); } glow('#62e3ff', 0, 1.0, 0, 2.2); break;
+    case 'kotatsu': B(1.8, .26, 1.8, '#e0507a', 0, .14, 0); [[-.7, -.7], [.7, .7]].forEach(([x, z]) => B(.35, .27, .35, '#ffd1e6', x, .14, z)); B(1.5, .08, 1.5, '#8a5a34', 0, .32, 0); B(.3, .12, .3, '#ff8a5c', 0, .42, 0); break;
+    case 'console': B(.9, .32, .5, '#2a2236', 0, .16, -.1); B(.4, .12, .3, '#f3eef8', -.15, .38, -.1); A.push(['pulse', B(.08, .04, .02, null, -.15, .38, .06, 0, 0, 0, glowM('#7dffc4'))]); B(.24, .06, .14, '#ff5fa2', .22, .35, .1); glow('#7dffc4', -.15, .4, .1, .7); break;
+    case 'arcade': B(.82, 1.75, .72, '#3b2a7a', 0, .88, 0); B(.86, .2, .4, '#ff5fa2', 0, 1.82, .1); { const sc = B(.62, .5, .02, null, 0, 1.3, .37, -.25, 0, 0, new THREE.MeshBasicMaterial({color: '#ff8cc0'})); A.push(['screen', sc]); } B(.7, .1, .3, '#2a2236', 0, .92, .45); [[-.15, '#ffc53d'], [.05, '#62e3ff'], [.2, '#ff5fa2']].forEach(([x, c]) => B(.08, .05, .08, c, x, .99, .45)); glow('#ff8cc0', 0, 1.3, .45, 1.4); break;
+    case 'pc': B(1.8, .08, .8, '#3a3550', 0, .75, -.05); for (const x of [-.82, .82]) B(.08, .72, .7, '#2a2236', x, .36, -.05); B(.3, .62, .6, '#1b1626', .6, .31, -.05); A.push(['pulse', B(.04, .5, .02, null, .45, .35, .26, 0, 0, 0, glowM('#c47bff'))]); B(.95, .58, .06, '#111018', -.15, 1.12, -.32); { const sc = B(.85, .48, .02, null, -.15, 1.12, -.28, 0, 0, 0, new THREE.MeshBasicMaterial({color: '#c47bff'})); A.push(['screen', sc]); } B(.6, .04, .22, '#2a2236', -.15, .8, .15); glow('#c47bff', -.15, 1.12, -.2, 1.5); break;
+  }
+  g.userData.anim = A;
+  return g;
+}
+
+/* ---------- HOME: emote bubbles (pixel art) ---------- */
+const EMO_ART = {
+  heart: ['.11.11..', '1111111.', '1111111.', '1111111.', '.11111..', '..111...', '...1....', '........', '#ff3d6e'],
+  note: ['...1111.', '...1..1.', '...1..1.', '...1..1.', '.111.11.', '1111111.', '.11..11.', '........', '#c2185b'],
+  zzz: ['1111....', '..1.....', '.1......', '1111.11.', '.....1..', '....11..', '.......', '........', '#3b6fd9'],
+  dots: ['........', '........', '........', '11.11.11', '11.11.11', '........', '........', '........', '#3a3550'],
+  laugh: ['.111111.', '1......1', '1.1..1.1', '1......1', '1.1111.1', '1..11..1', '.111111.', '........', '#d99a00'],
+  wow: ['...11...', '...11...', '...11...', '...11...', '...11...', '........', '...11...', '...11...', '#ff3d3d'],
+  question: ['.1111...', '11..11..', '....11..', '...11...', '..11....', '........', '..11....', '..11....', '#7a4fd9'],
+  food: ['...1....', '..111...', '.11111..', '1111111.', '1222221.', '1222221.', '.......', '........', '#ffffff', '#1b1626'],
+  sparkle: ['...1....', '...1....', '.11111..', '1111111.', '.11111..', '...1....', '...1....', '........', '#ffc53d'],
+  idea: ['..111...', '.11111..', '.11111..', '.11111..', '..111...', '..222...', '..222...', '........', '#ffd33d', '#8a8494'],
+  angry: ['.1...1..', '..1.1...', '........', '..1.1...', '.1...1..', '........', '........', '........', '#ff3d3d'],
+  sweat: ['...1....', '..11....', '.1111...', '.1111...', '..11....', '........', '........', '........', '#5fa8ff'],
+};
+const EMO_TEX = {};
+function emoTex(k) {
+  if (EMO_TEX[k]) return EMO_TEX[k];
+  const c = document.createElement('canvas'); c.width = c.height = 32; const g = c.getContext('2d');
+  const px = (x, y, w, h, col) => { g.fillStyle = col; g.fillRect(x, y, w, h); };
+  px(4, 2, 24, 22, '#160f24'); px(5, 3, 22, 20, '#ffffff'); px(3, 4, 26, 18, '#160f24'); px(4, 4, 24, 18, '#ffffff');
+  px(13, 24, 6, 2, '#160f24'); px(14, 24, 4, 1, '#ffffff'); px(15, 26, 2, 2, '#160f24');
+  const a = EMO_ART[k] || EMO_ART.dots;
+  for (let y = 0; y < 8; y++) for (let x = 0; x < 8; x++) { const ch = a[y][x]; if (ch === '1') px(8 + x * 2, 5 + y * 2, 2, 2, a[8]); if (ch === '2') px(8 + x * 2, 5 + y * 2, 2, 2, a[9] || '#000'); }
+  if (k === 'food') for (let y = 0; y < 8; y++) for (let x = 0; x < 8; x++) if (a[y][x] === '1' && (x === 0 || y === 0)) px(8 + x * 2, 5 + y * 2, 2, 2, '#160f24');
+  const t = new THREE.CanvasTexture(c); t.magFilter = t.minFilter = THREE.NearestFilter; t.generateMipmaps = false;
+  return EMO_TEX[k] = t;
+}
+function showEmo(r, k, dur = 1.6) {
+  if (!r.emo) return;
+  r.emo.material.map = emoTex(k); r.emo.material.needsUpdate = true; r.emo.visible = true; r.emoT = dur; r.emoMax = dur;
+}
+
+/* ---------- HOME: scene ---------- */
+let HS3 = null, homeMode = false;
+const RES = {};
+function initHome() {
+  if (HS3 || !R3) return;
+  const sc = new THREE.Scene();
+  const cam = new THREE.PerspectiveCamera(44, 1, .1, 200);
+  const sky = document.createElement('canvas'); sky.width = 64; sky.height = 256; const sg = sky.getContext('2d');
+  const gr = sg.createLinearGradient(0, 0, 0, 256); gr.addColorStop(0, '#0b0a24'); gr.addColorStop(.6, '#2b1f55'); gr.addColorStop(1, '#6b3a6e'); sg.fillStyle = gr; sg.fillRect(0, 0, 64, 256);
+  for (let i = 0; i < 40; i++) { sg.fillStyle = `rgba(255,255,255,${.3 + Math.random() * .6})`; sg.fillRect(Math.random() * 64 | 0, Math.random() * 140 | 0, 1, 1); }
+  sc.background = new THREE.CanvasTexture(sky);
+  sc.add(new THREE.HemisphereLight(0xe0dcff, 0x40304a, .62));
+  const dl = new THREE.DirectionalLight(0xfff0f8, .45); dl.position.set(-5, 9, 10); sc.add(dl);
+  for (const y of [2.3, 5.1]) { const pl = new THREE.PointLight(0xffd9a0, .7, 9); pl.position.set(0, y, 1.2); sc.add(pl); }
+  const h = homeData(), FH = HOUSE.FH;
+  const wallMat = new THREE.MeshToonMaterial({color: (WALLS.find(w => w.id === h.wall) || WALLS[0]).col, gradientMap: TOON});
+  const tileMat = new THREE.MeshLambertMaterial({color: 0xffffff});
+  const W = (w, hh, d, c, x, y, z, m) => box(sc, w, hh, d, c, x, y, z, 0, 0, 0, m);
+  const wood = '#5a3a26', dark = '#3a2418';
+  // ground + garden
+  W(30, .4, 24, '#2b4a3a', 0, -.45, 0);
+  W(9.2, .5, 6.2, '#6b6476', 0, -.2, 0);
+  // floors (tile grids)
+  const tiles = new THREE.InstancedMesh(BOX, tileMat, 80); tiles.receiveShadow = true;
+  const o3 = new THREE.Object3D(); let ti = 0;
+  for (let f = 0; f < 2; f++) for (let tx = 0; tx < 8; tx++) for (let tz = 0; tz < 5; tz++) {
+    o3.position.set(tx - 3.5, f * FH + .03, tz - 2); o3.scale.set(tileBlocked(tx, tz) && f ? 0 : .98, .06, tileBlocked(tx, tz) && f ? 0 : .98); o3.updateMatrix(); tiles.setMatrixAt(ti++, o3.matrix);
+  }
+  sc.add(tiles);
+  // upper slab with stair opening
+  W(6.0, .22, 5.0, wood, -1, FH - .11, 0); W(2.0, .22, 1.0, wood, 3, FH - .11, -2);
+  // walls
+  const back = W(8.4, 6.9, .3, null, 0, 3.35, -2.65, wallMat), left = W(.3, 6.9, 5.3, null, -4.15, 3.35, 0, wallMat), right = W(.3, 6.9, 5.3, null, 4.15, 3.35, 0, wallMat);
+  for (const x of [-4.2, 4.2]) W(.36, 7.0, .36, dark, x, 3.4, 2.5);
+  for (const y of [.02, FH - .05, FH * 2 + .2]) { W(8.5, .2, .34, dark, 0, y + .05, -2.6); for (const x of [-4.15, 4.15]) W(.34, .2, 5.3, dark, x, y + .05, 0); }
+  W(6.4, .2, .25, dark, -1, FH - .05, 2.45);
+  for (const [x, y] of [[-2, 1.6], [1.2, 1.6], [-2, 4.9], [1.2, 4.9]]) { W(1.3, 1.1, .1, dark, x, y, -2.47); W(1.1, .9, .06, null, x, y, -2.42, glowM('#9fd8ff')); W(.06, .9, .07, dark, x, y, -2.4); }
+  // railing upstairs
+  W(6.0, .08, .08, wood, -1, FH + .75, 2.42); for (let i = 0; i <= 6; i++) W(.08, .75, .08, wood, -4 + i, FH + .38, 2.42);
+  // stairs (right side, front to back)
+  for (let i = 0; i < 6; i++) { const hh = (i + 1) * FH / 6; W(1.6, hh, .58, '#8a5a34', 3.15, hh / 2, 2.2 - i * .56); W(1.62, .05, .6, '#b07a46', 3.15, hh, 2.2 - i * .56); }
+  // roof (stepped voxel)
+  W(8.6, .25, 5.6, dark, 0, FH * 2 + .4, -.1);
+  for (let i = 0; i < 5; i++) W(9.6 - i * 1.7, .45, 6.4, i % 2 ? '#a3243f' : '#c4333f', 0, FH * 2 + .75 + i * .45, -.1);
+  // outside props
+  for (const x of [-6.5, 6.5]) { W(.4, 2.6, .4, '#4a2c22', x, 1.1, -1); [[0, 2.8, 0, 1.6], [.6, 2.5, .3, 1.1], [-.6, 2.4, -.2, 1.1]].forEach(([dx, y, dz, s]) => W(s, s * .8, s, '#ff9fc6', x + dx, y, -1 + dz)); }
+  for (const x of [-5.4, 5.4]) { W(.5, .15, .5, '#8a8494', x, .07, 3.4); W(.18, .8, .18, '#8a8494', x, .5, 3.4); W(.42, .36, .42, null, x, 1.05, 3.4, glowM('#ffc977')); }
+  const furn = new THREE.Group(); sc.add(furn);
+  const resG = new THREE.Group(); sc.add(resG);
+  const gridG = new THREE.Group(); sc.add(gridG);
+  const sel = new THREE.Group(); sc.add(sel);
+  // invisible pick planes
+  const pickMat = new THREE.MeshBasicMaterial({visible: false});
+  const p0 = new THREE.Mesh(new THREE.PlaneGeometry(8, 5), pickMat); p0.rotation.x = -Math.PI / 2; p0.position.set(0, .07, 0); p0.userData.floor = 0; sc.add(p0);
+  const p1 = new THREE.Mesh(new THREE.PlaneGeometry(8, 5), pickMat); p1.rotation.x = -Math.PI / 2; p1.position.set(0, FH + .07, 0); p1.userData.floor = 1; sc.add(p1);
+  HS3 = {sc, cam, wallMat, tiles, furn, resG, gridG, sel, picks: [p0, p1], ray: new THREE.Raycaster(), fobj: {}};
+  recolorHome(); rebuildFurniture(); syncResidents(); homeResize();
+}
+function recolorHome() {
+  if (!HS3) return;
+  const h = homeData(), wc = (WALLS.find(w => w.id === h.wall) || WALLS[0]).col, fc = (FLOORS.find(w => w.id === h.floor) || FLOORS[0]).col;
+  HS3.wallMat.color.set(wc);
+  const col = new THREE.Color(); let i = 0;
+  for (let f = 0; f < 2; f++) for (let tx = 0; tx < 8; tx++) for (let tz = 0; tz < 5; tz++) { col.set(fc); col.offsetHSL(0, 0, ((tx * 7 + tz * 3 + f) % 5 - 2) * .02); HS3.tiles.setColorAt(i++, col); }
+  HS3.tiles.instanceColor.needsUpdate = true;
+}
+function rebuildFurniture() {
+  if (!HS3) return;
+  const F = HS3.furn; while (F.children.length) F.remove(F.children[0]);
+  HS3.fobj = {};
+  homeData().placed.forEach(p => {
+    const m = furnModel(p.id), c = placedCenter(p);
+    m.position.set(c.x, c.y + .06, c.z); m.rotation.y = p.rot * Math.PI / 2; m.userData.uid = p.uid;
+    m.traverse(o => { o.userData.uid = p.uid; if (o.userData.glow) o.visible = Q().glow; });
+    F.add(m); HS3.fobj[p.uid] = m;
+  });
+  showSelection();
+}
+function homeResize() {
+  if (!HS3) return;
+  const asp = W / H, cam = HS3.cam, dist = 15.5;
+  const vfW = 2 * Math.atan(5.3 / (dist * asp)) * 180 / Math.PI, vfH = 2 * Math.atan(4.4 / dist) * 180 / Math.PI;
+  cam.aspect = asp; cam.fov = Math.max(vfW, vfH); cam.updateProjectionMatrix();
+  cam.position.set(0, 6.2, dist); cam.lookAt(0, 3.1, 0);
+}
+
+/* ---------- HOME: residents ---------- */
+function syncResidents() {
+  if (!HS3) return;
+  const sel = homeData().sel;
+  Object.keys(RES).forEach(id => { if (!sel.includes(id)) { HS3.resG.remove(RES[id].m.root); delete RES[id]; } });
+  sel.forEach((id, i) => {
+    if (RES[id]) return;
+    const m = heroModel(HB[id]); m.root.scale.setScalar(.72); m.root.rotation.order = 'YXZ'; m.ring.visible = false;
+    m.glows.forEach(g => g.visible = Q().glow);
+    m.root.traverse(o => { o.userData.res = id; });
+    const f = i % 2, ft = freeTiles(f), t = ft[Math.floor(Math.random() * ft.length)] || [0, 0];
+    const emo = new THREE.Sprite(new THREE.SpriteMaterial({map: emoTex('dots'), transparent: true, depthTest: false}));
+    emo.scale.setScalar(.8); emo.visible = false; emo.renderOrder = 10; HS3.resG.add(emo);
+    const r = RES[id] = {id, m, emo, emoT: 0, emoMax: 1, f, pos: {x: t[0] - 3.5, y: f * HOUSE.FH, z: t[1] - 2}, path: [], st: 'idle', t: 1 + Math.random() * 2, yaw: 0, use: null, ph: Math.random() * 6, nextEmo: 2 + Math.random() * 3};
+    HS3.resG.add(m.root); placeRes(r);
+  });
+}
+function placeRes(r) { r.m.root.position.set(r.pos.x, r.pos.y + .06, r.pos.z); }
+function busyUse(uid, me) { return Object.values(RES).some(o => o !== me && o.use && o.use.uid === uid); }
+function routeTo(r, x, z, f) {
+  const FH = HOUSE.FH, path = [];
+  if (f !== r.f) {
+    if (r.f === 0) path.push({x: 3.1, y: 0, z: 2.75}, {x: 3.15, y: FH, z: -.7}, {x: 3.0, y: FH, z: -2});
+    else path.push({x: 3.0, y: FH, z: -2}, {x: 3.15, y: FH, z: -.7}, {x: 3.1, y: 0, z: 2.75});
+  }
+  path.push({x, y: f * FH, z});
+  r.path = path; r.st = 'walk';
+}
+function useSpot(p) {
+  const it = HI[p.id], c = placedCenter(p), [dx, dz] = frontDir(p.rot), [fw, fd] = footprint(it, p.rot);
+  if (it.use === 'sit' || it.use === 'lie') {
+    let ox = 0, oz = 0;
+    if (p.id === 'sofa' || p.id === 'kotatsu') { const s = Math.random() < .5 ? -.45 : .45; ox = dz ? s : 0; oz = dx ? s : 0; }
+    if (p.id === 'console') return {x: c.x + dx * 1.0, z: c.z + dz * 1.0, f: p.f, face: Math.atan2(-dx, -dz), seat: .02};
+    if (p.id === 'kotatsu') return {x: c.x + ox + dx * 1.15, z: c.z + oz + dz * 1.15, f: p.f, face: Math.atan2(-dx, -dz), seat: .02};
+    return {x: c.x + ox + dx * .05, z: c.z + oz + dz * .05, f: p.f, face: Math.atan2(dx, dz), seat: it.seat || .45};
+  }
+  const reach = (dz ? fd : fw) / 2 + .55;
+  return {x: c.x + dx * reach, z: c.z + dz * reach, f: p.f, face: Math.atan2(-dx, -dz), seat: 0};
+}
+function pickAction(r) {
+  const h = homeData(), roll = Math.random();
+  const usable = h.placed.filter(p => HI[p.id].use && !busyUse(p.uid, r));
+  if (hunger(r.id) < 30 && Math.random() < .4) { showEmo(r, Math.random() < .5 ? 'food' : 'sweat', 1.8); r.st = 'idle'; r.t = 2 + Math.random() * 2; return; }
+  if (roll < .45 && usable.length) {
+    const p = usable[Math.floor(Math.random() * usable.length)], s = useSpot(p);
+    r.use = {uid: p.uid, ...s, dur: 4 + Math.random() * 5, item: p.id};
+    routeTo(r, s.x, s.z, s.f); return;
+  }
+  if (roll < .7) {
+    const others = Object.values(RES).filter(o => o !== r && (o.st === 'idle' || o.st === 'walk') && !o.partner);
+    if (others.length) {
+      const o = others[Math.floor(Math.random() * others.length)];
+      o.st = 'wait'; o.t = 6; o.partner = r; r.partner = o;
+      const side = o.pos.x > 0 ? -.75 : .75;
+      routeTo(r, o.pos.x + side, o.pos.z, o.f); return;
+    }
+  }
+  const f = Math.random() < .7 ? r.f : 1 - r.f, ft = freeTiles(f), tt = ft[Math.floor(Math.random() * ft.length)];
+  if (tt) routeTo(r, tt[0] - 3.5 + (Math.random() - .5) * .3, tt[1] - 2 + (Math.random() - .5) * .3, f);
+  else { r.st = 'idle'; r.t = 2; }
+}
+function homeUpdate(dt) {
+  if (!HS3) return;
+  const FH = HOUSE.FH;
+  Object.values(RES).forEach(r => {
+    const m = r.m, root = m.root;
+    r.ph += dt;
+    if (r.emoT > 0) { r.emoT -= dt; const k = 1 - r.emoT / r.emoMax; r.emo.scale.setScalar(.8 * (k < .15 ? k / .15 : 1)); if (r.emoT <= 0) r.emo.visible = false; }
+    r.emo.position.set(r.pos.x, r.pos.y + (r.st === 'use' && r.use && r.use.seat > 0 ? 1.95 + r.use.seat * .2 : 2.05), r.pos.z + .2);
+    let pose = 'stand';
+    if (r.st === 'walk') {
+      const tg = r.path[0];
+      if (!tg) { r.st = 'idle'; r.t = 1; }
+      else {
+        const dx = tg.x - r.pos.x, dz = tg.z - r.pos.z, dy = tg.y - r.pos.y, d = Math.hypot(dx, dz, dy), step = (hunger(r.id) < 30 ? 1.0 : 1.6) * dt;
+        if (d <= step) {
+          r.pos.x = tg.x; r.pos.y = tg.y; r.pos.z = tg.z; r.f = tg.y > FH / 2 ? 1 : 0; r.path.shift();
+          if (!r.path.length) {
+            if (r.use) { r.st = 'use'; r.t = r.use.dur; r.yaw = r.use.face; r.nextEmo = .6; }
+            else if (r.partner && r.partner.partner === r) { r.st = 'talk'; r.t = 4.5; r.partner.st = 'talk'; r.partner.t = 4.5; r.nextEmo = .4; r.partner.nextEmo = 1.2; }
+            else { r.st = 'idle'; r.t = 1.5 + Math.random() * 3; }
+          }
+        } else {
+          r.pos.x += dx / d * step; r.pos.y += dy / d * step; r.pos.z += dz / d * step;
+          if (Math.hypot(dx, dz) > .01) r.yaw = Math.atan2(dx, dz);
+        }
+        pose = 'walk';
+      }
+    } else {
+      r.t -= dt;
+      if (r.st === 'use') {
+        pose = HI[r.use.item].use;
+        r.nextEmo -= dt;
+        if (r.nextEmo <= 0) { const e = HI[r.use.item].emo || ['dots']; showEmo(r, e[Math.floor(Math.random() * e.length)]); r.nextEmo = 2.2 + Math.random() * 2; }
+        if (r.t <= 0) { r.use = null; r.st = 'idle'; r.t = .8 + Math.random() * 2; }
+      } else if (r.st === 'talk') {
+        pose = 'talk';
+        const o = r.partner; if (o) r.yaw = Math.atan2(o.pos.x - r.pos.x, o.pos.z - r.pos.z);
+        r.nextEmo -= dt;
+        if (r.nextEmo <= 0) { const e = ['dots', 'laugh', 'heart', 'note', 'wow', 'question', 'sparkle']; showEmo(r, e[Math.floor(Math.random() * e.length)], 1.3); r.nextEmo = 1.8 + Math.random(); }
+        if (r.t <= 0) { r.st = 'idle'; r.t = 1 + Math.random() * 2; r.partner = null; }
+      } else if (r.st === 'wait') {
+        if (r.partner && r.partner.partner === r) { const o = r.partner; r.yaw = Math.atan2(o.pos.x - r.pos.x, o.pos.z - r.pos.z); }
+        if (r.t <= 0) { r.st = 'idle'; r.t = 1; if (r.partner) { r.partner.partner = null; } r.partner = null; }
+      } else if (r.t <= 0) pickAction(r);
+      else if (hunger(r.id) < 30) { r.nextEmo -= dt; if (r.nextEmo <= 0) { showEmo(r, 'food', 1.5); r.nextEmo = 5 + Math.random() * 4; } }
+    }
+    // pose
+    const sw = Math.sin(r.ph * 9), u = r.use;
+    if (!u && pose !== 'walk' && pose !== 'talk') pose = 'stand';
+    let y = r.pos.y + .06, rx = 0;
+    m.armR.rotation.set(-.35, 0, 0); m.armL.rotation.set(-.1, 0, 0); m.head.rotation.set(0, 0, 0);
+    if (pose === 'walk') { y += Math.abs(sw) * .06; m.armR.rotation.x = -.35 + sw * .6; m.armL.rotation.x = -.1 - sw * .6; }
+    else if (pose === 'sit') { y += u.seat; m.armR.rotation.x = -1.1; m.armL.rotation.x = -1.1; }
+    else if (pose === 'lie') { y += .62; rx = -Math.PI / 2; }
+    else if (pose === 'dance') { y += Math.abs(Math.sin(r.ph * 6)) * .18; m.armR.rotation.x = -2.6 + Math.sin(r.ph * 6) * .5; m.armL.rotation.x = -2.6 - Math.sin(r.ph * 6) * .5; r.yaw += dt * 2.5; }
+    else if (pose === 'watch' || pose === 'stand') { m.head.rotation.x = Math.sin(r.ph * 2) * .05; if (pose === 'stand' && u) { m.armR.rotation.x = -1.4 + Math.sin(r.ph * 8) * .25; } }
+    else if (pose === 'talk') { y += Math.abs(Math.sin(r.ph * 4)) * .03; m.armR.rotation.x = -.6 + Math.sin(r.ph * 5) * .5; m.head.rotation.z = Math.sin(r.ph * 3) * .08; }
+    else { y += Math.abs(Math.sin(r.ph * 2.4)) * .02; }
+    root.position.set(r.pos.x, y, r.pos.z);
+    if (pose === 'lie') { root.position.x += Math.sin(r.yaw) * .55; root.position.z += Math.cos(r.yaw) * .55; }
+    root.rotation.set(rx, pose === 'lie' ? r.yaw + Math.PI : r.yaw, 0);
+  });
+  // furniture animation
+  Object.values(HS3.fobj).forEach(g => (g.userData.anim || []).forEach(([mode, o]) => {
+    if (mode === 'screen') o.material.color.setHSL((t * .07 + o.id * .13) % 1, .7, .62);
+    else if (mode === 'pulse') o.scale.setScalar(.1 + Math.abs(Math.sin(t * 6)) * .06);
+  }));
+}
+function showSelection() {
+  if (!HS3) return;
+  const S2 = HS3.sel; while (S2.children.length) S2.remove(S2.children[0]);
+  if (homeSel && HS3.fobj[homeSel]) { const bh = new THREE.BoxHelper(HS3.fobj[homeSel], 0xffc53d); S2.add(bh); }
+}
+function showGrid(on) {
+  if (!HS3) return;
+  const G = HS3.gridG; while (G.children.length) G.remove(G.children[0]);
+  if (!on) return;
+  const mat = new THREE.MeshBasicMaterial({color: '#7dffc4', transparent: true, opacity: .35, depthWrite: false});
+  for (let f = 0; f < 2; f++) freeTiles(f).forEach(([tx, tz]) => { const m = new THREE.Mesh(BOX, mat); m.scale.set(.9, .02, .9); m.position.set(tx - 3.5, f * HOUSE.FH + .09, tz - 2); G.add(m); });
+}
+let homeSel = null, placing = null;
+function homePick(cx, cy) {
+  if (!HS3) return null;
+  const v = new THREE.Vector2(cx / W * 2 - 1, -(cy / H) * 2 + 1);
+  HS3.ray.setFromCamera(v, HS3.cam);
+  if (placing) {
+    const hit = HS3.ray.intersectObjects(HS3.picks)[0];
+    return hit ? {type: 'tile', f: hit.object.userData.floor, x: hit.point.x, z: hit.point.z} : null;
+  }
+  const resHit = HS3.ray.intersectObjects(HS3.resG.children, true).find(i => i.object.userData.res);
+  if (resHit) return {type: 'res', id: resHit.object.userData.res};
+  const fHit = HS3.ray.intersectObjects(HS3.furn.children, true).find(i => i.object.userData.uid);
+  if (fHit) return {type: 'furn', uid: fHit.object.userData.uid};
+  return null;
+}
+
 /* ---------- game state ---------- */
 let foe = null, bossT = 30, ultT = 0, shakeT = 0, flashT = 0, saveT = 0, uiT = 0, t = 0;
 const HS = {};
@@ -1320,7 +1734,7 @@ function kill() {
       else { S.stage++; track('stage'); S.kills = 0; giveCrystals(5); }
     }
   }
-  S.best = Math.max(S.best, S.stage);
+  S.best = Math.max(S.best, S.stage); S.peak = Math.max(S.peak || 1, S.stage); checkUnlocks();
 }
 function bossFail() {
   S.stage = Math.max(1, S.stage - 1); S.kills = 10; S.farm = true;
@@ -1406,6 +1820,7 @@ function update(dt) {
     }
     return true;
   });
+  if (R3 && homeMode) try { homeUpdate(dt); } catch (e) { console.error(e); }
   if (R3) try {
     updFx(dt); animHeroes(); animFoe();
     if (envGroup && envGroup.userData.circ) envGroup.userData.circ.rotation.z = t * .4;
@@ -1420,11 +1835,15 @@ function update(dt) {
 function render() {
   if (R3) {
     const sh = shakeT > 0 && !reduce ? shakeT / .3 : 0;
-    try { camPos((Math.random() - .5) * .25 * sh, (Math.random() - .5) * .25 * sh); R3.render(scene, camera); } catch (e) { fail3D(e); }
+    try {
+      if (homeMode && HS3) R3.render(HS3.sc, HS3.cam);
+      else { camPos((Math.random() - .5) * .25 * sh, (Math.random() - .5) * .25 * sh); R3.render(scene, camera); }
+    } catch (e) { fail3D(e); }
   }
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   ctx.clearRect(0, 0, W, H);
   if (!R3) { ctx.fillStyle = '#17132f'; ctx.fillRect(0, 0, W, H); ctx.fillStyle = '#9d94c9'; ctx.font = '800 13px sans-serif'; ctx.textAlign = 'center'; ctx.fillText('3D view could not start on this device', W / 2, H * .6); }
+  if (homeMode) return;
   slashes.forEach(s => {
     const k = s.life / s.max;
     ctx.save(); ctx.translate(s.x, s.y); ctx.rotate(s.a); ctx.globalAlpha = k;
@@ -1665,6 +2084,8 @@ function updateUI() {
   $('hint').hidden = S.taps > 4;
   $('sumDot').hidden = S.crystals < COST1 || tab === 'summon';
   $('misDot').hidden = !misReadyCount();
+  $('homeDot').hidden = !S.homeNew || homeMode;
+  if (homeMode) { S.homeNew = false; renderHome(); }
   if (!$('missions').hidden) renderMissions();
   renderList();
 }
@@ -1743,10 +2164,11 @@ battle.addEventListener('pointerdown', e => {
   if (e.target.closest('button')) return;
   e.preventDefault();
   const r = battle.getBoundingClientRect();
+  if (homeMode) { initAudio(); homeTap(e.clientX - r.left, e.clientY - r.top); return; }
   tapAt(e.clientX - r.left, e.clientY - r.top);
 });
 document.addEventListener('keydown', e => {
-  if (e.code === 'Space' && !e.target.closest('button') && $('sumFx').hidden) { e.preventDefault(); const g = G(); tapAt(g.fx + (Math.random() - .5) * g.R, g.fy + (Math.random() - .5) * g.R); }
+  if (e.code === 'Space' && !homeMode && !e.target.closest('button') && $('sumFx').hidden) { e.preventDefault(); const g = G(); tapAt(g.fx + (Math.random() - .5) * g.R, g.fy + (Math.random() - .5) * g.R); }
 });
 $('ult').addEventListener('click', fireUlt);
 $('bossBtn').addEventListener('click', () => { S.farm = false; S.stage++; S.kills = 0; spawnFoe(); updateUI(); });
@@ -1809,7 +2231,7 @@ list.addEventListener('click', e => {
     if (!b.dataset.arm) { b.dataset.arm = '1'; b.textContent = 'Tap again to awaken'; setTimeout(() => { delete b.dataset.arm; }, 3000); return; }
     const gain = awakenGain(), roster = {};
     Object.keys(S.roster).forEach(id => roster[id] = {lv: 1, star: S.roster[id].star});
-    const keep = {spirit: S.spirit + gain, mute: S.mute, fps: S.fps, q: S.q, px: S.px, taps: S.taps, roster, team: S.team, crystals: S.crystals + 100 + gain * 5, pity: S.pity, mis: S.mis};
+    const keep = {spirit: S.spirit + gain, mute: S.mute, fps: S.fps, q: S.q, px: S.px, taps: S.taps, roster, team: S.team, crystals: S.crystals + 100 + gain * 5, pity: S.pity, mis: S.mis, home: S.home, peak: peak()};
     S = Object.assign(fresh(), keep); ultT = 0; shots = []; flashT = .35; sig = '';
     spawnFoe(); save(); toast(`Awakened! +${fmt(gain)} Spirit Orbs`); updateUI();
   }
@@ -1822,6 +2244,192 @@ list.addEventListener('click', e => {
 $('payClose').addEventListener('click', () => { $('payNote').hidden = true; });
 $('offBtn').addEventListener('click', () => { $('modal').hidden = true; });
 
+
+/* ---------- HOME: UI ---------- */
+let hTab = 'furn', hSig = '';
+const hList = $('hList');
+const FOOD_ART = {onigiri: ['#ffffff', '#1b1626'], ramen: ['#ffd36b', '#c4333f'], bento: ['#e0507a', '#ffffff'], sushi: ['#ff8a5c', '#ffffff'], cake: ['#ffd1e6', '#7dffc4']};
+function foodIcon(fid) {
+  const c = document.createElement('canvas'); c.width = c.height = 16; const g = c.getContext('2d'), [a, b] = FOOD_ART[fid];
+  const px = (x, y, w, h, col) => { g.fillStyle = col; g.fillRect(x, y, w, h); };
+  if (fid === 'onigiri') { px(7, 2, 2, 2, a); px(5, 4, 6, 2, a); px(3, 6, 10, 4, a); px(2, 10, 12, 3, a); px(5, 10, 6, 3, b); }
+  else if (fid === 'ramen') { px(2, 7, 12, 2, a); px(3, 9, 10, 3, b); px(5, 12, 6, 1, b); px(4, 4, 1, 3, '#ffffff'); px(7, 3, 1, 4, '#ffffff'); px(10, 4, 1, 3, '#ffffff'); }
+  else if (fid === 'bento') { px(2, 4, 12, 9, '#1b1626'); px(3, 5, 5, 7, '#ffffff'); px(9, 5, 4, 3, a); px(9, 9, 4, 3, '#7dffc4'); }
+  else if (fid === 'sushi') { px(2, 6, 5, 5, b); px(2, 6, 5, 2, a); px(9, 6, 5, 5, b); px(9, 6, 5, 2, '#ffc53d'); px(2, 11, 12, 2, '#1b1626'); }
+  else { px(3, 6, 10, 7, a); px(3, 6, 10, 2, '#ffffff'); px(7, 3, 2, 3, '#ff3d6e'); px(4, 10, 8, 1, b); }
+  c.className = 'ficon'; return c;
+}
+function furnIcon(id, size) {
+  const key = 'f|' + id + '|' + size;
+  if (PCACHE[key]) return PCACHE[key];
+  if (!HAS3D) return null;
+  if (!PR) portraitImage(HB.akari, 8, 8, 'head');
+  if (!PR) return null;
+  try {
+    PR.setPixelRatio(1); PR.setSize(size, size, false); PR.setClearColor(0x000000, 0);
+    const m = furnModel(id); m.rotation.y = -.5; pScene.add(m);
+    const it = HI[id], big = Math.max(it.w, it.d, id === 'shelf' || id === 'arcade' || id === 'fridge' ? 2 : 1.2);
+    pCam.aspect = 1; pCam.updateProjectionMatrix(); pCam.position.set(big * 1.2, big * 1.25, big * 2.4); pCam.lookAt(0, .55, 0);
+    PR.render(pScene, pCam);
+    const out = document.createElement('canvas'); out.width = out.height = size; out.getContext('2d').drawImage(PR.domElement, 0, 0);
+    pScene.remove(m); return PCACHE[key] = out;
+  } catch (e) { return null; }
+}
+function setMode(home) {
+  homeMode = home;
+  $('app').classList.toggle('home', home);
+  $('homePanel').hidden = !home; $('mainPanel').hidden = home;
+  $('homeBtn').querySelector('span').textContent = home ? 'BATTLE' : 'HOME';
+  $('homeBtn').setAttribute('aria-label', home ? 'Back to battle' : 'Home');
+  if (home) { initHome(); syncResidents(); hSig = ''; renderHome(); }
+  placing = null; homeSel = null; showGrid(false); showSelection(); homeBar();
+  sfx('buy');
+}
+function homeBar(html) {
+  const b = $('homeBar');
+  if (!homeMode || !html) { b.hidden = true; return; }
+  b.innerHTML = html; b.hidden = false;
+}
+function startPlacing(id, uid) {
+  placing = {id, uid, rot: 0};
+  homeSel = null; showSelection(); showGrid(true);
+  homeBar(`<span>Tap a green spot to place <b>${HI[id].name}</b></span><button class="hb" data-hb="rot">Rotate</button><button class="hb" data-hb="cancel">Cancel</button>`);
+}
+function homeTap(x, y) {
+  const hit = homePick(x, y), h = homeData();
+  if (placing) {
+    if (!hit) return;
+    const it = HI[placing.id], [fw, fd] = footprint(it, placing.rot);
+    let tx = Math.round(hit.x + 3.5 - (fw - 1) / 2), tz = Math.round(hit.z + 2 - (fd - 1) / 2);
+    tx = Math.max(0, Math.min(8 - fw, tx)); tz = Math.max(0, Math.min(5 - fd, tz));
+    if (!canPlace(placing.id, hit.f, tx, tz, placing.rot, placing.uid)) { toast('No room there. Try a green spot.'); return; }
+    if (placing.uid) { const p = h.placed.find(q => q.uid === placing.uid); if (p) Object.assign(p, {f: hit.f, tx, tz, rot: placing.rot}); }
+    else h.placed.push({uid: h.uid++, id: placing.id, f: hit.f, tx, tz, rot: placing.rot});
+    placing = null; showGrid(false); rebuildFurniture(); homeBar(); hSig = ''; renderHome(); save(); sfx('buy');
+    toast(`${it.name} placed!`);
+    return;
+  }
+  if (hit && hit.type === 'furn') {
+    homeSel = hit.uid; showSelection();
+    const p = h.placed.find(q => q.uid === hit.uid);
+    homeBar(`<span><b>${HI[p.id].name}</b></span><button class="hb" data-hb="frot">Rotate</button><button class="hb" data-hb="move">Move</button><button class="hb" data-hb="store">Store</button><button class="hb" data-hb="done">Done</button>`);
+    return;
+  }
+  if (hit && hit.type === 'res') {
+    homeSel = null; showSelection();
+    const r = RES[hit.id]; if (r) showEmo(r, 'heart', 1.4);
+    const hg = Math.round(hunger(hit.id)), best = bestFood();
+    homeBar(`<span><b>${HB[hit.id].name}</b> · ${hg < 30 ? '<em class="hungry">Hungry</em>' : 'Fullness'} ${hg}%</span>` +
+      (best ? `<button class="hb" data-hb="feed" data-id="${hit.id}">Feed ${FOODS.find(f => f.id === best).name}</button>` : `<button class="hb" data-hb="buyfood">Buy food</button>`) + `<button class="hb" data-hb="done">Done</button>`);
+    return;
+  }
+  homeSel = null; showSelection(); homeBar();
+}
+function bestFood() { const p = homeData().pantry; const f = FOODS.filter(x => p[x.id] > 0); return f.length ? f[f.length - 1].id : null; }
+$('homeBar').addEventListener('click', e => {
+  const b = e.target.closest('[data-hb]'); if (!b) return;
+  const h = homeData(), act = b.dataset.hb;
+  if (act === 'cancel') { placing = null; showGrid(false); homeBar(); }
+  else if (act === 'rot' && placing) { placing.rot = (placing.rot + 1) % 4; toast(`Rotated: facing ${['front', 'right', 'back', 'left'][placing.rot]}`); }
+  else if (act === 'frot') {
+    const p = h.placed.find(q => q.uid === homeSel); if (!p) return;
+    for (let k = 1; k <= 4; k++) { const r2 = (p.rot + k) % 4; if (canPlace(p.id, p.f, p.tx, p.tz, r2, p.uid)) { p.rot = r2; break; } }
+    rebuildFurniture(); save();
+  } else if (act === 'move') { const p = h.placed.find(q => q.uid === homeSel); if (p) startPlacing(p.id, p.uid); }
+  else if (act === 'store') { h.placed = h.placed.filter(q => q.uid !== homeSel); Object.values(RES).forEach(r => { if (r.use && r.use.uid === homeSel) { r.use = null; r.st = 'idle'; r.t = .5; } }); homeSel = null; rebuildFurniture(); homeBar(); hSig = ''; renderHome(); save(); }
+  else if (act === 'feed') { const id = b.dataset.id, f = bestFood(); if (f && feed(id, f)) { toast(`${HB[id].name} ate ${FOODS.find(x => x.id === f).name}!`); sfx('buy'); save(); hSig = ''; renderHome(); } homeBar(); }
+  else if (act === 'buyfood') { switchHTab('food'); homeBar(); }
+  else if (act === 'done') { homeSel = null; showSelection(); homeBar(); }
+});
+function switchHTab(t) {
+  hTab = t; hSig = '';
+  document.querySelectorAll('#hTabs .tab').forEach(x => x.setAttribute('aria-selected', x.dataset.ht === t));
+  renderHome(); hList.scrollTop = 0;
+}
+document.querySelectorAll('#hTabs .tab').forEach(b => b.addEventListener('click', () => switchHTab(b.dataset.ht)));
+function lockTag(st) { return `<span class="lock">Stage ${st}</span>`; }
+function renderHome() {
+  if (!homeMode) return;
+  const h = homeData(), pk = peak();
+  const subs = {furn: `Unlock more by clearing stages · best <b>${pk}</b>`, elec: `Unlock more by clearing stages · best <b>${pk}</b>`,
+    food: `${COIN}<b>${fmt(S.gold)}</b> coins · pantry <b>${Object.values(h.pantry).reduce((a, b) => a + b, 0)}</b>`,
+    res: `Residents <b>${h.sel.length}/${HOME_MAX}</b> · tap a hero in the house to feed`, style: `Walls and floors unlock with stages`};
+  const sl = subs[hTab]; if ($('hSubL').innerHTML !== sl) $('hSubL').innerHTML = sl;
+  const sig = hTab + '|' + pk + '|' + h.placed.length + '|' + h.sel.join(',') + '|' + h.wall + h.floor + '|' + JSON.stringify(h.pantry) + '|' + Object.keys(S.roster).length;
+  if (sig === hSig) { updateHomeLive(); return; }
+  hSig = sig;
+  if (hTab === 'furn' || hTab === 'elec') {
+    const items = HOME_ITEMS.filter(i => i.cat === hTab);
+    hList.innerHTML = items.map(it => {
+      const on = unlocked(it), n = h.placed.filter(p => p.id === it.id).length;
+      return `<div class="row ${on ? '' : 'locked'}" data-it="${it.id}"><div class="ico fic"></div><div class="info"><div class="nm"><span class="n">${it.name}</span>${on ? '' : lockTag(it.stage)}</div>
+        <div class="sub">${it.w}×${it.d} · ${it.desc}</div><div class="stat">${on ? (n ? `${n} placed` : 'Unlocked') : `Reach stage ${it.stage} to unlock`}</div></div>
+        <button class="buy" data-place="${it.id}" ${on ? '' : 'disabled'}><span class="bl">${on ? 'PLACE' : 'LOCKED'}</span></button></div>`;
+    }).join('');
+    hList.querySelectorAll('.row[data-it]').forEach(row => { const im = furnIcon(row.dataset.it, 96); const box = row.querySelector('.fic'); if (im) { const c = document.createElement('canvas'); c.width = c.height = 96; c.getContext('2d').drawImage(im, 0, 0); box.appendChild(c); } });
+  } else if (hTab === 'food') {
+    hList.innerHTML = `<div class="card"><p>Residents get hungry over about 8 hours. Buy food here, then tap a hungry hero in the house, or feed everyone at once.</p><button class="wide" id="feedAll">Feed all hungry residents</button></div>` +
+      FOODS.map(f => `<div class="row"><div class="ico fic" data-f="${f.id}"></div><div class="info"><div class="nm"><span class="n">${f.name}</span></div><div class="sub">+${f.fill} fullness</div><div class="stat">In pantry: <em data-pc="${f.id}">${h.pantry[f.id] || 0}</em></div></div>
+        <button class="buy" data-food="${f.id}"><span class="bl">BUY</span><span class="bc">${COIN}<span>${fmt(f.price)}</span></span></button></div>`).join('');
+    hList.querySelectorAll('[data-f]').forEach(b => b.appendChild(foodIcon(b.dataset.f)));
+  } else if (hTab === 'res') {
+    const ids = ownedSorted();
+    hList.innerHTML = ids.map(id => `<div class="row" data-rid="${id}"><div class="pfc"><canvas class="pf ${HB[id].rar}"></canvas></div><div class="info"><div class="nm"><span class="n">${HB[id].name}</span><span class="rar ${HB[id].rar}">${HB[id].rar}</span></div>
+      <div class="mbar"><i data-hg></i><span data-hgt></span></div></div>
+      <div class="rbtns"><button class="teamchip" data-home="${id}"></button><button class="teamchip" data-feed="${id}">FEED</button></div></div>`).join('');
+    hList.querySelectorAll('.row[data-rid]').forEach(row => portrait(row.querySelector('canvas'), HB[row.dataset.rid]));
+  } else {
+    const sw = (arr, kind) => arr.map(s => { const on = pk >= s.stage, cur = h[kind] === s.id;
+      return `<div class="row ${on ? '' : 'locked'}"><div class="ico swatch" style="--sw:${s.col}"></div><div class="info"><div class="nm"><span class="n">${s.name}</span>${on ? '' : lockTag(s.stage)}</div><div class="sub">${kind === 'wall' ? 'Wallpaper' : 'Flooring'}</div></div>
+        <button class="buy" data-style="${kind}:${s.id}" ${on && !cur ? '' : 'disabled'}><span class="bl">${cur ? 'IN USE' : on ? 'USE' : 'LOCKED'}</span></button></div>`; }).join('');
+    hList.innerHTML = `<div class="shead">WALLPAPER</div>${sw(WALLS, 'wall')}<div class="shead">FLOORING</div>${sw(FLOORS, 'floor')}`;
+  }
+  updateHomeLive();
+}
+function updateHomeLive() {
+  if (hTab === 'res') {
+    const h = homeData();
+    hList.querySelectorAll('.row[data-rid]').forEach(row => {
+      const id = row.dataset.rid, hv = Math.round(hunger(id)), inH = h.sel.includes(id);
+      row.querySelector('[data-hg]').style.width = hv + '%';
+      row.querySelector('[data-hg]').style.filter = hv < 30 ? 'hue-rotate(-120deg)' : '';
+      setText(row.querySelector('[data-hgt]'), hv < 30 ? `Hungry ${hv}%` : `Fullness ${hv}%`);
+      const c = row.querySelector('[data-home]'); setText(c, inH ? 'IN HOME' : '+ HOME'); c.classList.toggle('on', inH);
+      row.querySelector('[data-feed]').disabled = !bestFood() || hv >= 100;
+    });
+  }
+  if (hTab === 'food') hList.querySelectorAll('[data-food]').forEach(b => { b.disabled = S.gold < FOODS.find(f => f.id === b.dataset.food).price; });
+}
+hList.addEventListener('click', e => {
+  const h = homeData();
+  const pl = e.target.closest('[data-place]'), fd = e.target.closest('[data-food]'), hm = e.target.closest('[data-home]'), fe = e.target.closest('[data-feed]'), st = e.target.closest('[data-style]');
+  if (pl && !pl.disabled) { if (!freeTiles(0).length && !freeTiles(1).length) { toast('The house is full. Store something first.'); return; } startPlacing(pl.dataset.place); }
+  else if (fd && !fd.disabled) { const f = FOODS.find(x => x.id === fd.dataset.food); if (S.gold >= f.price) { S.gold -= f.price; h.pantry[f.id] = (h.pantry[f.id] || 0) + 1; sfx('buy'); save(); hSig = ''; renderHome(); updateUI(); } }
+  else if (e.target.id === 'feedAll') {
+    let n = 0;
+    h.sel.slice().sort((a, b) => hunger(a) - hunger(b)).forEach(id => { while (hunger(id) < 60 && bestFood()) { const f = FOODS.filter(x => h.pantry[x.id] > 0).find(x => hunger(id) + x.fill >= 60) || FOODS.find(x => h.pantry[x.id] > 0); if (!feed(id, f.id)) break; n++; } });
+    toast(n ? `Fed ${n} snack${n > 1 ? 's' : ''} to your residents!` : (bestFood() ? 'Everyone is already full.' : 'Your pantry is empty. Buy some food first.'));
+    if (n) { sfx('buy'); save(); } hSig = ''; renderHome();
+  }
+  else if (hm) {
+    const id = hm.dataset.home, i = h.sel.indexOf(id);
+    if (i >= 0) h.sel.splice(i, 1);
+    else { if (h.sel.length >= HOME_MAX) { toast(`The house holds ${HOME_MAX} heroes. Move someone out first.`); return; } h.sel.push(id); toast(`${HB[id].name} moved in!`); }
+    syncResidents(); save(); hSig = ''; renderHome(); sfx('buy');
+  }
+  else if (fe && !fe.disabled) { const id = fe.dataset.feed, f = bestFood(); if (f && feed(id, f)) { toast(`${HB[id].name} ate ${FOODS.find(x => x.id === f).name}!`); sfx('buy'); save(); hSig = ''; renderHome(); } }
+  else if (st && !st.disabled) { const [k, v] = st.dataset.style.split(':'); h[k] = v; recolorHome(); save(); hSig = ''; renderHome(); sfx('buy'); }
+});
+$('homeBtn').addEventListener('click', () => setMode(!homeMode));
+let lastPeakSeen = 0;
+function checkUnlocks() {
+  const pk = peak();
+  if (!lastPeakSeen) { lastPeakSeen = pk; return; }
+  if (pk <= lastPeakSeen) return;
+  const news = [...HOME_ITEMS, ...WALLS, ...FLOORS].filter(i => i.stage > lastPeakSeen && i.stage <= pk);
+  lastPeakSeen = pk;
+  if (news.length) { toast(`Home unlock: ${news.map(n => n.name).join(', ')}!`); S.homeNew = true; }
+}
 
 /* ---------- missions ---------- */
 const MISSIONS = {
@@ -1944,6 +2552,7 @@ function normalize(s) {
   if (!n.roster[n.team[0]]) n.roster[n.team[0]] = {lv: 1, star: 1};
   if (!QUAL[n.q]) n.q = 'high';
   if (!['chunky', 'fine', 'off'].includes(n.px)) n.px = 'chunky';
+  n.peak = Math.max(n.peak || 1, n.best || 1, n.stage || 1);
   if (![30, 60, 90, 120].includes(n.fps)) n.fps = 60;
   n.v = 2;
   return n;
@@ -2019,6 +2628,7 @@ function setupStart(skip) {
 function start(data) {
   const restored = data && data.S ? normalize(data.S) : load();
   if (restored) S = restored;
+  lastPeakSeen = peak();
   init3D();
   new ResizeObserver(() => { resize(); if (tab === 'summon') sig = ''; }).observe(battle);
   resize(); spawnFoe();
