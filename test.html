@@ -1201,7 +1201,7 @@ function resize() {
   }
 }
 const CAM = {x: 0, z: -1.4};
-function camPos(sx = 0, sy = 0) { camera.position.set(CAM.x + sx, 3.9 + sy, CAM.z + 7.7); camera.lookAt(CAM.x + sx * .3, 1.2, CAM.z - .7); }
+function camPos(sx = 0, sy = 0) { camera.position.set(CAM.x + sx, 4.7 + sy, CAM.z + 9.2); camera.lookAt(CAM.x + sx * .3, 1.35, CAM.z - .9); }
 const foePos = () => foe && foe.x !== undefined ? foe : {x: 0, z: FOE_Z};
 function toScreen(x, y, z) { if (!R3) return {x: W / 2, y: H * .45}; _v.set(x, y, z).project(camera); return {x: (_v.x + 1) / 2 * W, y: (1 - _v.y) / 2 * H}; }
 function G() {
@@ -1866,7 +1866,7 @@ function update(dt) {
     const fr = foeObj ? .5 * foeObj.group.scale.x + .55 : 1.3;
     let tx = st.p.x, tz = st.p.z;
     if (live) {
-      const a = [-1.25, 1.25, .3][k % 3] + Math.sin(t * .4 + k * 2.1) * .35, R = ranged ? 3.2 : fr;
+      const a = [-1.45, 1.45, 2.25][k % 3] + Math.sin(t * .4 + k * 2.1) * .3, R = ranged ? 3.2 : fr;
       tx = fp.x + Math.sin(a) * R; tz = fp.z + Math.cos(a) * R;
     } else if (!foe) { tx = slots[k][0]; tz = slots[k][1]; }
     tx = Math.max(-3.6, Math.min(3.6, tx)); tz = Math.max(-4.4, Math.min(2.4, tz));
