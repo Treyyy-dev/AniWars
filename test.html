@@ -1217,9 +1217,9 @@ function heroSlots(n) {
   const out = [];
   if (n <= 3) for (let i = 0; i < n; i++) out.push([(i - (n - 1) / 2) * 3.4, 1.0 + Math.abs(i - (n - 1) / 2) * .6]);
   else {
-    const f = Math.ceil(n / 2), b = n - f, sh = b === f ? .4 : 0;
-    for (let i = 0; i < f; i++) out.push([(i - (f - 1) / 2) * 1.6 - sh, 2.8]);
-    for (let i = 0; i < b; i++) out.push([(i - (b - 1) / 2) * 1.6 + sh, 1.1]);
+    const f = Math.ceil(n / 2), b = n - f, sh = b === f ? .8 : 0;
+    for (let i = 0; i < f; i++) out.push([(i - (f - 1) / 2) * 3.0 - sh, .5]);
+    for (let i = 0; i < b; i++) out.push([(i - (b - 1) / 2) * 3.0 + sh, 2.0]);
   }
   return out;
 }
@@ -1227,7 +1227,7 @@ const isRanged = id => { const w = HB[id].weapon; return w === 'bow' || w === 's
 function teamLayout(team) {
   const slots = heroSlots(team.length), order = team.length === 3 ? [1, 0, 2] : team.map((_, i) => i);
   const melee = team.filter(id => !isRanged(id)), sorted = melee.concat(team.filter(isRanged)), out = {};
-  const ang = melee.length === 1 ? [0] : melee.length === 2 ? [-.7, .7] : [-.95, 0, .95];
+  const mc = melee.length, ang = melee.map((_, i) => mc === 1 ? 0 : -1.3 + 2.6 * i / (mc - 1));
   sorted.forEach((id, i) => { const mi = melee.indexOf(id); out[id] = {slot: slots[order[i]], a: mi >= 0 ? ang[mi] : 0}; });
   return out;
 }
@@ -1385,7 +1385,7 @@ function homeData() {
   if (!h.uid) h.uid = 1;
   return h;
 }
-const TEAM_MAX = 3;
+const TEAM_MAX = 6;
 const HUNGER_MS = 8 * 3600 * 1000;
 function hunger(id) {
   const f = homeData().food[id];
@@ -1850,7 +1850,7 @@ function fireUlt() {
 }
 
 /* ---------- lil monsters (minions) ---------- */
-let mins = [], minT = 1;
+let mins = [], minT = 1, regroupT = 0, regroupStage = null;
 const MIN_S = .72;
 function spawnMinion() {
   if (!foe) return;
@@ -1882,7 +1882,7 @@ function minionDamage(m, amt, crit, x, y, col) {
 }
 function updMinions(dt, team) {
   const live = foe && !foe.dead;
-  if (live && foe.spawnT > .3) {
+  if (live && foe.spawnT > .3 && regroupT <= 0) {
     minT -= dt;
     const cap = foe.boss ? 14 : 11, n = mins.filter(m => !m.dead).length;
     if (minT <= 0) { const k = Math.min(cap - n, foe.spawnT < 1 ? 6 : 3 + Math.floor(Math.random() * 2)); for (let i = 0; i < k; i++) spawnMinion(); minT = 1.3 + Math.random() * 1.2; }
@@ -1970,6 +1970,11 @@ function update(dt) {
     foe.moving = d > .05 && foe.spawnT > .3;
     if (foe.moving) { const k = Math.min(1, sp / d); foe.x += dx * k; foe.z += dz * k; }
   }
+  if (S.stage !== regroupStage) {
+    if (regroupStage !== null) { regroupT = 1.6; mins.forEach(m => { if (!m.dead) { m.dead = true; m.deadT = 0; burst(m.x, .5, m.z, Math.round(10 * Q().pm), `hsl(${m.hue},80%,62%)`, 3.5, -10, .12, .5); } }); }
+    regroupStage = S.stage;
+  }
+  regroupT = Math.max(0, regroupT - dt);
   if (!homeMode) updMinions(dt, team);
   // heroes run in and attack the big monster or the lil monsters; ranged heroes keep their distance
   let cx = 0, cz = 0;
@@ -1981,22 +1986,28 @@ function update(dt) {
     const ranged = isRanged(id);
     st.acc = (st.acc || 0) + dt * (ultT > 0 ? 4 : 1);
     if (!st.mode) st.mode = 'home';
-    if ((st.mode === 'go' || st.mode === 'hit') && !tgLive(st.tg)) { const nt = st.mode === 'go' ? nearestTarget(st.p.x, st.p.z, k % 2 === 0) : null; if (nt) { st.tg = nt; st.ta = nt === foe ? L.a : Math.atan2(st.p.x - nt.x, st.p.z - nt.z); } else if (st.mode === 'go' || st.hold <= 0) st.mode = 'back'; }
-    if (st.mode === 'home' && !ranged && anyTg && st.cd <= 0) {
+    const regroup = regroupT > 0;
+    if (regroup && !ranged && st.mode !== 'home') st.mode = 'back';
+    if ((st.mode === 'go' || st.mode === 'hit') && !tgLive(st.tg)) {
+      if (st.mode === 'go') { const nt = nearestTarget(st.p.x, st.p.z, k % 2 === 0); if (nt) { st.tg = nt; st.ta = nt === foe ? L.a : Math.atan2(st.p.x - nt.x, st.p.z - nt.z); } else st.mode = 'field'; }
+      else if (st.hold <= 0) st.mode = 'field';
+    }
+    if ((st.mode === 'home' || st.mode === 'field' || st.mode === 'back') && !ranged && !regroup && anyTg && st.cd <= 0) {
       const nt = nearestTarget(st.p.x, st.p.z, k % 2 === 0);
       if (nt) { st.tg = nt; st.ta = nt === foe ? L.a : Math.atan2(st.p.x - nt.x, st.p.z - nt.z); st.mode = 'go'; }
     }
     let tx = L.slot[0], tz = L.slot[1];
+    if (st.mode === 'field') { tx = st.p.x; tz = st.p.z; }
     if ((st.mode === 'go' || st.mode === 'hit') && st.tg) { const R = tgRadius(st.tg); tx = st.tg.x + Math.sin(st.ta) * R; tz = st.tg.z + Math.cos(st.ta) * R; }
     const dx = tx - st.p.x, dz = tz - st.p.z, d = Math.hypot(dx, dz), sp = (ultT > 0 ? 9 : 6.5) * dt;
     st.run = d > .15 && st.mode !== 'hit';
     if (d > .02) { const q = Math.min(1, sp / d); st.p.x += dx * q; st.p.z += dz * q; }
     if (st.mode === 'go' && d < .3) { st.mode = 'hit'; st.anim = .32; st.hitT = .13; st.hold = .45; st.hitDmg = heroDps(id) * st.acc; st.acc = 0; st.hitTg = st.tg; }
-    else if (st.mode === 'hit') { st.hold -= dt; if (st.hold <= 0) { st.mode = 'back'; st.cd = h.rate * .35; } }
+    else if (st.mode === 'hit') { st.hold -= dt; if (st.hold <= 0) { st.mode = 'field'; st.cd = h.rate * .35; } }
     else if (st.mode === 'back' && d < .15) st.mode = 'home';
     const look = st.tg && (st.mode === 'go' || st.mode === 'hit') ? st.tg : tgLive(foe) ? foe : null;
     const toT = look ? Math.atan2(look.x - st.p.x, look.z - st.p.z) : 0;
-    st.yaw = st.mode === 'go' || st.mode === 'hit' ? toT : st.mode === 'back' && st.run ? Math.atan2(dx, dz) : look ? toT * .25 : 0;
+    st.yaw = st.mode === 'go' || st.mode === 'hit' || (st.mode === 'field' && look) ? toT : st.mode === 'back' && st.run ? Math.atan2(dx, dz) : look ? toT * .25 : 0;
     cx += st.p.x; cz += st.p.z;
     if (ranged && st.cd <= 0) {
       const tg = nearestTarget(st.p.x, st.p.z, true);
