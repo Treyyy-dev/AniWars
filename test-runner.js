@@ -21,8 +21,8 @@ const mode = process.argv[2] || 'battle';
     for (const set of [[0,3],[3,6],[6,9]]) { await ev(`S.team = __pick.slice(${set[0]},${set[1]}); teamSig='';`); await p.waitForTimeout(1200); await p.screenshot({path:`out_b${set[0]}.png`, clip:{x:0,y:0,width:390,height:420}}); }
   } else if (mode === 'run') {
     await ev(`S.team = [__pick[0], __pick[3], __pick[7]]; teamSig=''; S.stage=12; spawnFoe();`);
-    for (let i = 0; i < 4; i++) { await p.waitForTimeout(i ? 650 : 1500); await p.screenshot({path:`out_r${i}.png`, clip:{x:0,y:0,width:390,height:420}}); }
-    console.log(await ev(`JSON.stringify({foe:[+foe.x.toFixed(2), +foe.z.toFixed(2), foe.hp|0, S.kills], heroes: S.team.map(id => [+hs(id).p.x.toFixed(2), +hs(id).p.z.toFixed(2), hs(id).run])})`));
+    for (let i = 0; i < 4; i++) { await p.waitForTimeout(i ? 900 : 2200); await p.screenshot({path:`out_r${i}.png`, clip:{x:0,y:0,width:390,height:420}}); }
+    console.log(await ev(`JSON.stringify({foe:[+foe.x.toFixed(2), +foe.z.toFixed(2), foe.hp|0, S.kills], heroes: S.team.map(id => [+hs(id).p.x.toFixed(2), +hs(id).p.z.toFixed(2), hs(id).mode]), mins: mins.map(m => [+m.x.toFixed(1), +m.z.toFixed(1), m.hp|0, m.dead])})`));
   } else if (mode === 'weapons') {
     await ev(`(() => { const c = document.createElement('canvas'); c.width = 6*130; c.height = 2*170; const g = c.getContext('2d'); g.fillStyle='#2b2450'; g.fillRect(0,0,c.width,c.height);
       __pick.forEach((id,i) => { const im = portraitImage(HB[id], 130, 170, 'full'); if (im) g.drawImage(im, (i%6)*130, Math.floor(i/6)*170); g.fillStyle='#fff'; g.font='12px sans-serif'; g.fillText(HB[id].weapon, (i%6)*130+4, Math.floor(i/6)*170+14); });
