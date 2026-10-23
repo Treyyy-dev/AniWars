@@ -1200,11 +1200,13 @@ function resize() {
     camPos(); homeResize();
   }
 }
-function camPos(sx = 0, sy = 0) { camera.position.set(sx, 5.2 + sy, 10.6); camera.lookAt(sx * .3, 1.45, -1.3); }
+const CAM = {x: 0, z: -1.4};
+function camPos(sx = 0, sy = 0) { camera.position.set(CAM.x + sx, 3.9 + sy, CAM.z + 7.7); camera.lookAt(CAM.x + sx * .3, 1.2, CAM.z - .7); }
+const foePos = () => foe && foe.x !== undefined ? foe : {x: 0, z: FOE_Z};
 function toScreen(x, y, z) { if (!R3) return {x: W / 2, y: H * .45}; _v.set(x, y, z).project(camera); return {x: (_v.x + 1) / 2 * W, y: (1 - _v.y) / 2 * H}; }
 function G() {
   if (!R3 || !foeObj) return {fx: W / 2, fy: H * .42, R: Math.min(W, H) * .18};
-  const s = foeObj.group.scale.x || 1, c = toScreen(0, foeObj.cy * s, FOE_Z), tp = toScreen(0, foeObj.cy * s + 1, FOE_Z);
+  const s = foeObj.group.scale.x || 1, fp = foePos(), c = toScreen(fp.x, foeObj.cy * s, fp.z), tp = toScreen(fp.x, foeObj.cy * s + 1, fp.z);
   return {fx: c.x, fy: c.y, R: Math.abs(c.y - tp.y)};
 }
 
@@ -1231,8 +1233,8 @@ function syncTeam() {
   S.team.forEach((id, k) => {
     const m = HM[id] || (HM[id] = heroModel(HB[id]));
     m.root.scale.setScalar(.85);
-    m.root.position.set(slots[k][0], 0, slots[k][1]);
-    m.root.rotation.y = -slots[k][0] * .12;
+    const st = hs(id); if (!st.p) st.p = {x: slots[k][0], z: slots[k][1]};
+    m.root.rotation.order = 'YXZ'; m.root.position.set(st.p.x, 0, st.p.z);
     m.glows.forEach(g => g.visible = Q().glow);
     heroLayer.add(m.root);
   });
@@ -1241,11 +1243,15 @@ function animHeroes() {
   S.team.forEach(id => {
     const m = HM[id]; if (!m) return;
     const st = hs(id), ph = st.ph;
-    const k = st.anim > 0 ? Math.sin(Math.PI * (1 - st.anim / .32)) : 0;
-    m.root.position.y = (reduce ? 0 : Math.abs(Math.sin(t * 3.2 + ph)) * .05) + k * .14;
+    const k = st.anim > 0 ? Math.sin(Math.PI * (1 - st.anim / .32)) : 0, run = st.run && !reduce;
+    if (st.p) { m.root.position.x = st.p.x; m.root.position.z = st.p.z; }
+    if (st.yaw !== undefined) { st.ry = st.ry === undefined ? st.yaw : st.ry + (((st.yaw - st.ry + Math.PI) % TAU + TAU) % TAU - Math.PI) * .25; }
+    m.root.rotation.set(run ? .24 : k * .12, st.ry || 0, 0);
+    m.root.position.y = (reduce ? 0 : run ? Math.abs(Math.sin(t * 15 + ph)) * .16 : Math.abs(Math.sin(t * 3.2 + ph)) * .05) + k * .14;
     const P = m.pose, wp = HB[id].weapon, br = reduce ? 0 : Math.sin(t * 3.2 + ph) * .06, two = wp === 'spear' || wp === 'scythe' || wp === 'hammer' || wp === 'katana';
     m.armR.rotation.x = P.rx + br - k * (wp === 'bow' ? .3 : 1.9); m.armR.rotation.z = P.rz - k * .15;
     m.armL.rotation.x = P.lx + br - (two ? k * 1.9 : wp === 'dual' || wp === 'fist' || wp === 'orb' ? k * 1.4 : 0); m.armL.rotation.z = P.lz;
+    if (run && k === 0) { const sw = Math.sin(t * 15 + ph); m.armR.rotation.x += sw * (two ? .15 : .35); m.armL.rotation.x -= sw * (two ? .15 : .35); }
     m.head.rotation.z = reduce ? 0 : Math.sin(t * 1.6 + ph) * .05;
     m.head.rotation.x = -k * .15;
     m.sway.forEach(([o, b, amp, mode, base]) => {
@@ -1265,7 +1271,7 @@ function mountFoe() {
   if (!R3) return;
   if (foeObj) { scene.remove(foeObj.group); foeObj.mats.forEach(m => { if (m.map) m.map.dispose(); m.dispose(); }); }
   try { foeObj = foeModel(foe); } catch (e) { foeObj = null; fail3D(e); return; }
-  foeObj.group.position.set(0, 0, FOE_Z);
+  { const fp = foePos(); foeObj.group.position.set(fp.x, 0, fp.z); }
   foeObj.base = foe.boss ? 1.85 : 1.5;
   foeObj.group.scale.setScalar(.01);
   scene.add(foeObj.group);
@@ -1277,9 +1283,12 @@ function animFoe() {
   if (foe.spawnT < .3) sc *= .3 + .7 * (foe.spawnT / .3);
   if (foe.dead) { sc *= 1 + foe.deadT * .8; op = Math.max(0, 1 - foe.deadT / .4); }
   g.scale.setScalar(sc);
-  g.position.y = reduce ? 0 : Math.abs(Math.sin(t * 1.8)) * .12;
-  g.position.x = foe.hitT > 0 ? (Math.random() - .5) * .18 : 0;
-  g.rotation.y = reduce ? 0 : Math.sin(t * .8) * .12;
+  const mv = foe.moving && !foe.dead && !reduce;
+  g.position.y = reduce ? 0 : mv ? Math.abs(Math.sin(t * (foe.boss ? 7 : 10))) * .22 : Math.abs(Math.sin(t * 1.8)) * .12;
+  g.position.x = foe.x + (foe.hitT > 0 ? (Math.random() - .5) * .18 : 0); g.position.z = foe.z;
+  const face = Math.max(-.8, Math.min(.8, Math.atan2((foe.lookX || 0) - foe.x, (foe.lookZ || 2) - foe.z)));
+  foe.ry = (foe.ry || 0) + (face - (foe.ry || 0)) * .08;
+  g.rotation.y = foe.ry + (reduce ? 0 : Math.sin(t * .8) * .12); g.rotation.z = mv ? Math.sin(t * 10) * .06 : 0;
   const f = foe.hitT > 0 ? foe.hitT / .12 : 0;
   foeObj.mats.forEach(m => {
     m.emissive.copy(m.userData.e0).lerp(_c.set(0xffffff), f * .85);
@@ -1743,7 +1752,8 @@ function spawnFoe() {
   const fd = FOES[(S.stage * 7 + S.kills * 3) % FOES.length];
   foe = {hp, max: hp, boss, kind: boss ? ['oni','golem','wisp'][Math.floor(S.stage / 5) % 3] : fd.k,
     name: boss ? BOSSES[Math.floor(S.stage / 5 - 1) % BOSSES.length] : fd.n,
-    hue: (S.stage * 37 + S.kills * 23 + (boss ? 180 : 0)) % 360, hitT: 0, spawnT: 0, dead: false, deadT: 0};
+    hue: (S.stage * 37 + S.kills * 23 + (boss ? 180 : 0)) % 360, hitT: 0, spawnT: 0, dead: false, deadT: 0,
+    x: (Math.random() - .5) * 2.4, z: FOE_Z - .4, tx: (Math.random() - .5) * 1.6, tz: -2.6, mt: 1.2, moving: false};
   bossT = 30;
   if (R3 && area(S.stage) !== bgArea) buildEnv(area(S.stage));
   mountFoe();
@@ -1751,7 +1761,8 @@ function spawnFoe() {
 }
 function foeHitPoint() {
   const s = foeObj ? foeObj.group.scale.x : 1.25, cy = foeObj ? foeObj.cy : 1.2;
-  return [(Math.random() - .5) * 1.1 * s, cy * s + (Math.random() - .3) * .9 * s, FOE_Z + .6 * s];
+  const fp = foePos();
+  return [fp.x + (Math.random() - .5) * 1.1 * s, cy * s + (Math.random() - .3) * .9 * s, fp.z + .6 * s];
 }
 function damage(amt, crit, x, y, col) {
   if (!foe || foe.dead || foe.spawnT < .15) return;
@@ -1769,8 +1780,8 @@ function kill() {
   S.gold += gold;
   texts.push({x: g.fx, y: g.fy - g.R * .4, vy: -45, life: 1.1, max: 1.1, txt: '+' + fmt(gold), col: '#ffc53d', size: 22});
   const s = foeObj ? foeObj.group.scale.x : 1.25, cy = (foeObj ? foeObj.cy : 1.2) * s, n = Math.round((foe.boss ? 70 : 34) * Q().pm);
-  burst(0, cy, FOE_Z, Math.ceil(n * .65), `hsl(${foe.hue},80%,62%)`, 6, -11, .2, .9);
-  burst(0, cy, FOE_Z, Math.ceil(n * .35), '#ffc53d', 5, -11, .14, 1.0);
+  burst(foe.x, cy, foe.z, Math.ceil(n * .65), `hsl(${foe.hue},80%,62%)`, 6, -11, .2, .9);
+  burst(foe.x, cy, foe.z, Math.ceil(n * .35), '#ffc53d', 5, -11, .14, 1.0);
   sfx(foe.boss ? 'ult' : 'kill');
   track('kill'); if (foe.boss) track('boss');
   if (foe.boss) { S.stage++; track('stage'); S.kills = 0; S.farm = false; shakeT = .35; toast('Boss defeated! +30 crystals'); giveCrystals(30); }
@@ -1812,7 +1823,7 @@ function fireUlt() {
   texts.push({x: W / 2, y: H * .3, vy: -20, life: 1.4, max: 1.4, txt: 'ULTIMA', col: '#ffffff', size: 40, banner: true});
   S.team.forEach(id => { hs(id).anim = .32; });
   const g = G();
-  burst(0, 1.6, FOE_Z, Math.round(60 * Q().pm), '#ff5fa2', 7, -6, .16, .9);
+  burst(foe.x, 1.6, foe.z, Math.round(60 * Q().pm), '#ff5fa2', 7, -6, .16, .9);
   damage(tapDmg() * 30 + totalDps() * 3, false, g.fx, g.fy, '#ffe95c');
   sfx('ult');
 }
@@ -1829,32 +1840,84 @@ function update(dt) {
     else if (foe.boss && foe.spawnT > .3) { bossT -= dt; if (bossT <= 0) bossFail(); }
   }
   try { syncTeam(); } catch (e) { fail3D(e); }
-  const g = G(), team = S.team, slots = heroSlots(team.length);
+  const team = S.team, slots = heroSlots(team.length), fp = foePos();
+  const live = foe && !foe.dead, active = live && foe.spawnT > .2;
+  // enemy wanders the arena and sometimes charges a hero
+  if (live && !homeMode) {
+    foe.mt -= dt;
+    if (foe.mt <= 0) {
+      const tgt = team.length && Math.random() < .4 ? hs(team[Math.floor(Math.random() * team.length)]).p : null;
+      if (tgt) { foe.tx = tgt.x * .85; foe.tz = tgt.z - .5; }
+      else { foe.tx = (Math.random() * 2 - 1) * 2.1; foe.tz = -3.7 + Math.random() * 2.5; }
+      foe.tx = Math.max(-2.4, Math.min(2.4, foe.tx)); foe.tz = Math.max(-4, Math.min(-.7, foe.tz));
+      foe.mt = (foe.boss ? 2.2 : 1.5) + Math.random() * 2;
+    }
+    const dx = foe.tx - foe.x, dz = foe.tz - foe.z, d = Math.hypot(dx, dz), sp = (foe.boss ? .9 : 1.4) * (foe.hitT > 0 ? .35 : 1) * dt;
+    foe.moving = d > .05 && foe.spawnT > .3;
+    if (foe.moving) { const k = Math.min(1, sp / d); foe.x += dx * k; foe.z += dz * k; }
+  }
+  // heroes run in, surround the enemy and attack; ranged heroes keep their distance
+  let cx = 0, cz = 0;
   team.forEach((id, k) => {
     const st = hs(id), h = HB[id]; st.anim = Math.max(0, st.anim - dt);
     st.cd -= dt * (ultT > 0 ? 1.5 : 1);
+    if (!st.p) st.p = {x: slots[k][0], z: slots[k][1]};
+    const ranged = h.weapon === 'bow' || h.weapon === 'staff' || h.weapon === 'orb';
+    const fr = foeObj ? .5 * foeObj.group.scale.x + .55 : 1.3;
+    let tx = st.p.x, tz = st.p.z;
+    if (live) {
+      const a = [-1.25, 1.25, .3][k % 3] + Math.sin(t * .4 + k * 2.1) * .35, R = ranged ? 3.2 : fr;
+      tx = fp.x + Math.sin(a) * R; tz = fp.z + Math.cos(a) * R;
+    } else if (!foe) { tx = slots[k][0]; tz = slots[k][1]; }
+    tx = Math.max(-3.6, Math.min(3.6, tx)); tz = Math.max(-4.4, Math.min(2.4, tz));
+    const dx = tx - st.p.x, dz = tz - st.p.z, d = Math.hypot(dx, dz), sp = (ultT > 0 ? 7.5 : 5.2) * dt;
+    st.run = d > .15;
+    if (st.run) { const q = Math.min(1, sp / d); st.p.x += dx * q; st.p.z += dz * q; }
+    st.yaw = live ? Math.atan2(fp.x - st.p.x, fp.z - st.p.z) : st.run ? Math.atan2(dx, dz) : st.yaw;
+    cx += st.p.x; cz += st.p.z;
     if (st.cd <= 0) {
-      st.cd += h.rate;
-      if (foe && !foe.dead && foe.spawnT > .2) {
-        st.anim = .32;
-        const m = HM[id];
-        if (m && R3) { m.root.updateMatrixWorld(true); m.tip.getWorldPosition(_from); }
-        const from = R3 && m ? [_from.x, _from.y, _from.z] : [slots[k][0], 1.2, slots[k][1]];
-        const to = foeHitPoint(), d = heroDps(id) * h.rate * (ultT > 0 ? 4 : 1);
-        let mesh = null;
-        if (R3) {
-          mesh = new THREE.Group();
-          const core = new THREE.Mesh(BOX, glowM(h.fx)); core.scale.setScalar(.16); mesh.add(core);
-          const inner = new THREE.Mesh(BOX, glowM('#ffffff')); inner.scale.setScalar(.09); mesh.add(inner);
-          if (Q().glow) mesh.add(glowSprite(h.fx, .9));
-          mesh.position.set(...from); scene.add(mesh);
-        }
-        shots.push({mesh, from, to, k: 0, dur: .38 + Math.random() * .1, arc: .8 + Math.random() * .8, dmg: d, col: h.fx, tr: 0});
+      if (active && d < (ranged ? 1.4 : .55)) {
+        st.cd += h.rate; st.anim = .32;
+        const dmg = heroDps(id) * h.rate * (ultT > 0 ? 4 : 1);
+        if (ranged) {
+          const m = HM[id];
+          if (m && R3) { m.root.updateMatrixWorld(true); m.tip.getWorldPosition(_from); }
+          const from = R3 && m ? [_from.x, _from.y, _from.z] : [st.p.x, 1.2, st.p.z];
+          const hp = foeHitPoint(), off = [hp[0] - fp.x, hp[1], hp[2] - fp.z];
+          let mesh = null;
+          if (R3) {
+            mesh = new THREE.Group();
+            const core = new THREE.Mesh(BOX, glowM(h.fx)); core.scale.setScalar(.16); mesh.add(core);
+            const inner = new THREE.Mesh(BOX, glowM('#ffffff')); inner.scale.setScalar(.09); mesh.add(inner);
+            if (Q().glow) mesh.add(glowSprite(h.fx, .9));
+            mesh.position.set(...from); scene.add(mesh);
+          }
+          shots.push({mesh, from, to: hp, off, k: 0, dur: .32 + Math.random() * .1, arc: .6 + Math.random() * .6, dmg, col: h.fx, tr: 0});
+        } else { st.hitT = .13; st.hitDmg = dmg; }
+      } else st.cd = 0;
+    }
+    if (st.hitT > 0) {
+      st.hitT -= dt;
+      if (st.hitT <= 0 && foe && !foe.dead) {
+        const hp = foeHitPoint(); hp[0] = (hp[0] + st.p.x) / 2; hp[2] = (hp[2] + st.p.z) / 2;
+        const p = toScreen(...hp);
+        damage(st.hitDmg, false, p.x, p.y - 10, h.fx);
+        burst(...hp, Math.round(8 * Q().pm), h.fx, 3.5, -8, .1, .4);
+        if (foeObj && !reduce) { foe.x += Math.sin(st.ry || 0) * .06; foe.z += Math.cos(st.ry || 0) * .06; }
       }
     }
   });
+  if (live) { foe.lookX = team.length ? cx / team.length : 0; foe.lookZ = team.length ? cz / team.length : 2; }
+  // camera follows the action
+  if (team.length || live) {
+    const n = team.length, hx = n ? cx / n : 0, hz = n ? cz / n : 0;
+    const wx = live ? fp.x * .55 + hx * .45 : hx, wz = live ? fp.z * .55 + hz * .45 : hz;
+    const tx = Math.max(-1.6, Math.min(1.6, wx * .8)), tz = Math.max(-3, Math.min(-.4, wz + .2)), q = Math.min(1, dt * 2.2);
+    CAM.x += (tx - CAM.x) * q; CAM.z += (tz - CAM.z) * q;
+  }
   shots = shots.filter(s => {
     s.k += dt / s.dur;
+    if (s.off && foe && !foe.dead) { const fp2 = foePos(); s.to = [fp2.x + s.off[0], s.off[1], fp2.z + s.off[2]]; }
     const k = Math.min(1, s.k), x = s.from[0] + (s.to[0] - s.from[0]) * k, y = s.from[1] + (s.to[1] - s.from[1]) * k + Math.sin(Math.PI * k) * s.arc, z = s.from[2] + (s.to[2] - s.from[2]) * k;
     if (s.mesh) { s.mesh.position.set(x, y, z); s.mesh.rotation.set(t * 9, t * 7, 0); }
     s.tr += dt; if (s.tr > .03 && Q().pm > .5) { s.tr = 0; burst(x, y, z, 1, s.col, .4, 0, .07, .25); }
