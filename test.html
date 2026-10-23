@@ -1201,7 +1201,7 @@ function resize() {
   }
 }
 const CAM = {x: 0, z: -1.4};
-function camPos(sx = 0, sy = 0) { camera.position.set(CAM.x + sx, 12.6 + sy, 4.6); camera.lookAt(CAM.x + sx * .3, 0, -1.7); }
+function camPos(sx = 0, sy = 0) { camera.position.set(CAM.x + sx, 14.8 + sy, 6.6); camera.lookAt(CAM.x + sx * .3, 0, -2.3); }
 const foePos = () => foe && foe.x !== undefined ? foe : {x: 0, z: FOE_Z};
 function toScreen(x, y, z) { if (!R3) return {x: W / 2, y: H * .45}; _v.set(x, y, z).project(camera); return {x: (_v.x + 1) / 2 * W, y: (1 - _v.y) / 2 * H}; }
 function G() {
@@ -1851,7 +1851,7 @@ function fireUlt() {
 
 /* ---------- lil monsters (minions) ---------- */
 let mins = [], minT = 1;
-const MIN_S = .55;
+const MIN_S = .62;
 function spawnMinion() {
   if (!foe) return;
   const a = Math.random() * TAU, r = 1.7 + Math.random() * .9;
